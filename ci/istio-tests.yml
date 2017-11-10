@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: golang }
+
+inputs:
+- name: istio-release
+
+run:
+  path: /bin/bash
+  args:
+  - -c
+  - |
+    cd istio-release
+    export GOPATH=${PWD}
+    export PATH=$PATH:$GOPATH/bin
+    go get github.com/onsi/ginkgo/ginkgo
+    go get github.com/golang/dep/cmd/dep
+    ./test.sh
