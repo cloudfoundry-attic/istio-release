@@ -1,0 +1,3 @@
+[submodule "src/code.cloudfoundry.org/copilot"]
+	path = src/code.cloudfoundry.org/copilot
+	url = https://github.com/cloudfoundry-incubator/copilot
