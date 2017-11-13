@@ -1,1 +1,7 @@
-name: istio
+---
+final_name: istio
+blobstore:
+  provider: gcs
+  options:
+    bucket_name: istio-release-blobs
+    credentials_source: static

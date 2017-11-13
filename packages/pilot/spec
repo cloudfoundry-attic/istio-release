@@ -1,0 +1,7 @@
+---
+name: pilot
+dependencies:
+- golang-1.9-linux
+files:
+- istio.io/istio/pilot/**/*
+- istio.io/istio/vendor/**/*

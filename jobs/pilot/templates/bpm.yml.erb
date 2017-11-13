@@ -1,0 +1,11 @@
+---
+processes:
+  pilot:
+    executable: /var/vcap/packages/pilot/bin/pilot-discovery
+    args:
+      - discovery
+      <%# - -config=/var/vcap/jobs/pilot/config/pilot.yml %>
+      <%# - -port=<%= p("routing_api.port") %1> %>
+      <%# - -logLevel=<%= p("routing_api.log_level") %1> %>
+      <%# - -ip=<%= spec.ip %1> %>
+      <%# <% if p("routing_api.auth_disabled") == true %1>- -devMode<% end %1> %>
