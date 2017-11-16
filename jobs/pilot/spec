@@ -1,8 +1,0 @@
----
-name: pilot
-templates:
-  bpm.yml.erb: config/bpm.yml
-
-packages:
-- pilot
-- golang-1.9-linux

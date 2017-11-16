@@ -1,5 +1,0 @@
-check process pilot
-  with pidfile /var/vcap/sys/run/bpm/pilot/pilot.pid
-  start program "/var/vcap/jobs/bpm/bin/bpm start pilot"
-  stop program "/var/vcap/jobs/bpm/bin/bpm stop pilot"
-  group vcap

@@ -1,0 +1,9 @@
+---
+processes:
+- name: pilot-discovery
+  executable: /var/vcap/packages/pilot/bin/pilot-discovery
+  args:
+  - discovery
+  - --configStore=Memory
+  - --registries=Cloudfoundry
+  - --cfConfig=/var/vcap/jobs/pilot-discovery/config/cf_config.yml

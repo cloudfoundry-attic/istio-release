@@ -1,0 +1,26 @@
+---
+name: pilot-discovery
+templates:
+  bpm.yml.erb: config/bpm.yml
+  cf_config.yml.erb: config/cf_config.yml
+  certs/ca.crt.erb: config/certs/ca.crt
+  certs/client.crt.erb: config/certs/client.crt
+  certs/client.key.erb: config/certs/client.key
+
+packages:
+- pilot
+- golang-1.9-linux
+
+properties:
+  copilot.server_ca_cert:
+    description: "PEM-encoded CA certificate used to communicate with copilot-server"
+  copilot.client_cert:
+    description: "PEM-encoded client certificate used to communicate with copilot-server"
+  copilot.client_key:
+    description: "PEM-encoded client private key used to communicate with copilot-server"
+  copilot.address:
+    description: "Address of the copilot-server"
+    default: 127.0.0.1:9000
+  copilot.poll_interval:
+    description: "Interval on which pilot polls the copilot-server"
+    default: 60s

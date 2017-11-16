@@ -1,0 +1,6 @@
+---
+name: copilot
+dependencies:
+- golang-1.9-linux
+files:
+- code.cloudfoundry.org/copilot/**/*

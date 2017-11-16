@@ -1,0 +1,5 @@
+check process copilot
+  with pidfile /var/vcap/sys/run/bpm/copilot/copilot.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start copilot"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop copilot"
+  group vcap

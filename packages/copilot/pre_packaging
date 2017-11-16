@@ -1,0 +1,19 @@
+set -exu
+
+# running dep requires files to be under $GOPATH/src
+mkdir ${BUILD_DIR}/src
+mv ${BUILD_DIR}/code.cloudfoundry.org ${BUILD_DIR}/src/code.cloudfoundry.org
+GOPATH=${BUILD_DIR}
+
+pushd ${BUILD_DIR}/src/code.cloudfoundry.org/copilot
+  # copilot's .git file only contains references to istio-release's .git file
+  # istio-release's .git file is not available here
+  # a .git file isn't necessary to run dep,
+  # but it does confuse dep if it's there (and invalid)
+  rm -rf .git
+  dep ensure
+popd
+
+# clean up directory structure only needed for running dep
+mv ${BUILD_DIR}/src/code.cloudfoundry.org ${BUILD_DIR}/code.cloudfoundry.org
+rm -rf ${BUILD_DIR}/src

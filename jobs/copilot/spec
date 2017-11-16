@@ -1,0 +1,41 @@
+---
+name: copilot
+templates:
+  bpm.yml.erb: config/bpm.yml
+  config.json.erb: config/config.json
+  certs/ca.crt.erb: config/certs/ca.crt
+  certs/server.crt.erb: config/certs/server.crt
+  certs/server.key.erb: config/certs/server.key
+  bbs/certs/ca.crt.erb: config/bbs/certs/ca.crt
+  bbs/certs/client.crt.erb: config/bbs/certs/client.crt
+  bbs/certs/client.key.erb: config/bbs/certs/client.key
+
+packages:
+- copilot
+- golang-1.9-linux
+
+properties:
+  copilot.listen_address:
+    description: "The address that copilot server listens on"
+    default: 127.0.0.1:9000
+  copilot.client_ca_cert:
+    description: "PEM-encoded CA certificate used to communicate with the client"
+  copilot.server_cert:
+    description: "PEM-encoded server certificate used to communicate with the client"
+  copilot.server_key:
+    description: "PEM-encoded server private key used to communicate with the client"
+  copilot.bbs.server_ca_cert:
+    description: "PEM-encoded CA certificate used to communicate with the bbs server"
+  copilot.bbs.client_cert:
+    description: "PEM-encoded client certificate used to communicate with the bbs server"
+  copilot.bbs.client_key:
+    description: "PEM-encoded client private key used to communicate with the bbs server"
+  copilot.bbs.address:
+    description: "Address of the bbs server"
+    default: https://bbs.service.cf.internal:8889
+  copilot.bbs.client_session_cache_size:
+    description: "Capacity of the tls client cache"
+    default: 0
+  copilot.bbs.max_idle_conns_per_host:
+    description: "Maximum number of idle http connections"
+    default: 0

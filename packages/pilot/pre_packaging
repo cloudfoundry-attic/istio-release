@@ -1,0 +1,14 @@
+set -exu
+
+# running dep requires files to be under $GOPATH/src
+mkdir ${BUILD_DIR}/src
+mv ${BUILD_DIR}/istio.io ${BUILD_DIR}/src/istio.io
+GOPATH=${BUILD_DIR}
+
+pushd ${BUILD_DIR}/src/istio.io/istio/pilot
+  dep ensure
+popd
+
+# clean up directory structure only needed for running dep
+mv ${BUILD_DIR}/src/istio.io ${BUILD_DIR}/istio.io
+rm -rf ${BUILD_DIR}/src

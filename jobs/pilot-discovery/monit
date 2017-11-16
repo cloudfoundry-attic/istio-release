@@ -1,0 +1,5 @@
+check process pilot-discovery
+  with pidfile /var/vcap/sys/run/bpm/pilot-discovery/pilot-discovery.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start pilot-discovery"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop pilot-discovery"
+  group vcap

@@ -1,0 +1,14 @@
+{
+  "ListenAddress": "<%= p('copilot.listen_address') %>",
+  "ClientCAPath": "/var/vcap/jobs/copilot/config/certs/ca.crt",
+  "ServerCertPath": "/var/vcap/jobs/copilot/config/certs/server.crt",
+  "ServerKeyPath": "/var/vcap/jobs/copilot/config/certs/server.key",
+  "BBS": {
+    "ServerCACertPath": "/var/vcap/jobs/copilot/config/bbs/certs/ca.crt",
+    "ClientCertPath": "/var/vcap/jobs/copilot/config/bbs/certs/client.crt",
+    "ClientKeyPath": "/var/vcap/jobs/copilot/config/bbs/certs/client.key",
+    "Address": "<%= p('copilot.bbs.address') %>",
+    "ClientSessionCacheSize": <%= p('copilot.bbs.client_session_cache_size') %>,
+    "MaxIdleConnsPerHost": <%= p('copilot.bbs.max_idle_conns_per_host') %>
+  }
+}
