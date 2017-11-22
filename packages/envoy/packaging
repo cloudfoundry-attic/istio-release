@@ -1,0 +1,5 @@
+set -e
+
+tar -xf envoy-linux/envoy.tar.gz
+mkdir -p ${BOSH_INSTALL_TARGET}/bin
+cp envoy ${BOSH_INSTALL_TARGET}/bin

@@ -1,0 +1,11 @@
+---
+name: envoy
+
+description: "TODO: Add a description"
+
+templates:
+  bpm.yml.erb: config/bpm.yml
+
+packages:
+  - envoy
+

@@ -1,0 +1,6 @@
+---
+name: envoy
+
+files:
+  - envoy-linux/envoy.tar.gz
+
