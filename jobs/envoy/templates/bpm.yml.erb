@@ -2,3 +2,6 @@
 processes:
 - name: envoy
   executable: /var/vcap/packages/envoy/bin/envoy
+  args:
+  - -c /var/vcap/jobs/envoy/config/envoy.json
+  - --service-cluster envoy

@@ -1,11 +1,19 @@
 ---
 name: envoy
-
-description: "TODO: Add a description"
-
 templates:
   bpm.yml.erb: config/bpm.yml
+  envoy.json.erb: config/envoy.json
 
 packages:
   - envoy
 
+properties:
+  envoy.listener:
+    description: "Array of listeneres, each listener in the array is an abject containing the following fields 'address',
+    'ssl', 'verify_certificate_hash', 'proxy_proto' and 'router_file'."
+    example: |
+        listener:
+        - address: tcp://127.0.0.1:10000
+          ssl: true
+          verify_certificate_hash: "This should be the hash of the /etc/envoy/envoy-double-proxy.pem cert used in the double proxy configuration."
+          proxy_proto: true
