@@ -12,19 +12,13 @@
               "virtual_hosts": [
                 {
                   "name": "backend",
-                  "domains": ["*"],
+                  "domains": ["golang-app.batman-lite.cf-app.com"],
                   "routes": [
                     {
                       "timeout_ms": 0,
-                      "prefix": "/service/1",
-                      "cluster": "service1"
-                    },
-                    {
-                      "timeout_ms": 0,
-                      "prefix": "/service/2",
-                      "cluster": "service2"
+                      "path": "/",
+                      "cluster": "66c8b38-6c19-4c95-b6b7-895c182fb9bc-e533d308-3eeb-4818-a198-47c347285892"
                     }
-
                   ]
                 }
               ]
@@ -47,26 +41,13 @@
   "cluster_manager": {
     "clusters": [
       {
-        "name": "service1",
+        "name": "66c8b38-6c19-4c95-b6b7-895c182fb9bc-e533d308-3eeb-4818-a198-47c347285892",
         "connect_timeout_ms": 250,
-        "type": "strict_dns",
+        "type": "static",
         "lb_type": "round_robin",
-        "features": "http2",
         "hosts": [
           {
-            "url": "tcp://service1:80"
-          }
-        ]
-      },
-      {
-        "name": "service2",
-        "connect_timeout_ms": 250,
-        "type": "strict_dns",
-        "lb_type": "round_robin",
-        "features": "http2",
-        "hosts": [
-          {
-            "url": "tcp://service2:80"
+            "url": "tcp://10.244.0.139:61002"
           }
         ]
       }

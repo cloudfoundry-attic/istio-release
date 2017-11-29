@@ -4,4 +4,4 @@ processes:
   executable: /var/vcap/packages/envoy/bin/envoy
   args:
   - -c /var/vcap/jobs/envoy/config/envoy.json
-  - --service-cluster envoy
+  - --max-obj-name-len 72
