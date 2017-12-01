@@ -5,6 +5,10 @@ mkdir ${BUILD_DIR}/src
 mv ${BUILD_DIR}/code.cloudfoundry.org ${BUILD_DIR}/src/code.cloudfoundry.org
 GOPATH=${BUILD_DIR}
 
+go get -u github.com/golang/dep/cmd/dep
+
+export PATH=$PATH:$GOPATH/bin
+
 pushd ${BUILD_DIR}/src/code.cloudfoundry.org/copilot
   # copilot's .git file only contains references to istio-release's .git file
   # istio-release's .git file is not available here
