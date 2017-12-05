@@ -26,5 +26,5 @@ Note: add-istio-release operation file is located in [routing-ci](https://github
 
 ```
 ./scripts/update # to sync all the submodules
-./scripts/test
+./test
 ```

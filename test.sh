@@ -6,6 +6,8 @@ cd "$(dirname "$0")"
 export GOPATH=${PWD}
 export PATH=$PATH:$GOPATH/bin
 
+go get -u github.com/golang/dep/cmd/dep
+
 pushd src/code.cloudfoundry.org/copilot
   dep ensure
   ginkgo -r -p --randomizeAllSpecs --randomizeSuites --failOnPending --trace --race --progress
@@ -15,3 +17,4 @@ pushd src/istio.io/istio/pilot
   dep ensure
   ginkgo -r -p --randomizeAllSpecs --randomizeSuites --failOnPending --trace --progress -skipPackage proxy/envoy,platform/kube,adapter/config/crd
 popd
+
