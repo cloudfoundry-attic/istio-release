@@ -9,10 +9,12 @@ go get -u github.com/golang/dep/cmd/dep
 
 export PATH=$PATH:$GOPATH/bin
 
-pushd ${BUILD_DIR}/src/istio.io/istio/pilot
-  dep ensure
+pushd ${BUILD_DIR}/src/istio.io/istio
+  dep ensure -v
 popd
 
 # clean up directory structure only needed for running dep
-mv ${BUILD_DIR}/src/istio.io ${BUILD_DIR}/istio.io
+mkdir -p ${BUILD_DIR}/istio.io/istio
+mv ${BUILD_DIR}/src/istio.io/istio/pilot ${BUILD_DIR}/istio.io/istio/
+mv ${BUILD_DIR}/src/istio.io/istio/vendor ${BUILD_DIR}/istio.io/istio/
 rm -rf ${BUILD_DIR}/src
