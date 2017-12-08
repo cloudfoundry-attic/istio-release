@@ -13,8 +13,11 @@ pushd src/code.cloudfoundry.org/copilot
   ginkgo -r -p --randomizeAllSpecs --randomizeSuites --failOnPending --trace --race --progress
 popd
 
-pushd src/istio.io/istio/pilot
+pushd src/istio.io/istio
   dep ensure
+popd
+
+pushd src/istio.io/istio/pilot
   ginkgo -r -p --randomizeAllSpecs --randomizeSuites --failOnPending --trace --progress -skipPackage proxy/envoy,platform/kube,adapter/config/crd
 popd
 
