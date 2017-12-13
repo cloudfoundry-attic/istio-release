@@ -13,7 +13,7 @@ Istio-release requires [bosh-cli](https://bosh.io/docs/cli-v2.html#install) >= `
 git clone https://github.com/cloudfoundry-incubator/istio-release
 
 cd istio-release/
-./script/update
+./scripts/update
 
 bosh create-release && bosh upload-release
 
