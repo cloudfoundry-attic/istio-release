@@ -10,6 +10,14 @@ go get -u github.com/golang/dep/cmd/dep
 export PATH=$PATH:$GOPATH/bin
 
 pushd ${BUILD_DIR}/src/istio.io/istio
+  # pilot's .git file only contains references to istio.io/istio's .git file
+  # istio.io/istio's .git file is not available here
+  # a .git file isn't necessary to run dep,
+  # but it does confuse dep if it's there (and invalid)
+  rm -rf .git
+  # we don't want people accidentally committing things that seem to work
+  # but only because they ran `dep ensure` locally
+  rm -rf vendor Gopkg.lock
   dep ensure -v
 popd
 
