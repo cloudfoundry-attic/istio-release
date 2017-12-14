@@ -10,10 +10,10 @@ go get -u github.com/golang/dep/cmd/dep
 export PATH=$PATH:$GOPATH/bin
 
 pushd ${BUILD_DIR}/src/istio.io/istio
-  # pilot's .git file only contains references to istio.io/istio's .git file
-  # istio.io/istio's .git file is not available here
-  # a .git file isn't necessary to run dep,
-  # but it does confuse dep if it's there (and invalid)
+  # Since isio is a submodule, its .git file contains a relative path reference
+  # into istio-release's .git directory. That directory is not available in the
+  # BUILD_DIR. A .git file isn't necessary to run dep,
+  # but it does confuse dep if it's there (and invalid).
   rm -rf .git
   # we don't want people accidentally committing things that seem to work
   # but only because they ran `dep ensure` locally
