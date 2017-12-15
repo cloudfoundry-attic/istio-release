@@ -4,6 +4,6 @@ processes:
   executable: /var/vcap/packages/pilot/bin/pilot-discovery
   args:
   - discovery
-  - --configStore=Memory
+  - --configDir=/var/vcap/jobs/pilot-discovery/config
   - --registries=Cloudfoundry
   - --cfConfig=/var/vcap/jobs/pilot-discovery/config/cf_config.yml
