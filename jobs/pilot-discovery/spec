@@ -6,6 +6,7 @@ templates:
   certs/ca.crt.erb: config/certs/ca.crt
   certs/client.crt.erb: config/certs/client.crt
   certs/client.key.erb: config/certs/client.key
+  empty: config/empty
 
 packages:
 - pilot
