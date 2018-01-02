@@ -1,6 +1,12 @@
 #!/bin/bash
 set -ex
 
+function has_upstream() {
+  git rev-parse @{u} > /dev/null 2>&1
+}
+
+has_upstream && git pull
+
 git submodule update --init --recursive
 
 echo "Istio Release has been updated"
