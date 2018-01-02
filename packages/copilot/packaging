@@ -8,6 +8,8 @@ export GOROOT=$(readlink -nf /var/vcap/packages/golang-1.9-linux)
 export PATH=$GOROOT/bin:$PATH
 pushd $GOPATH/src
   go install code.cloudfoundry.org/copilot/cmd/copilot-server
+  go install -o capi-client code.cloudfoundry.org/copilot/cmd/copilot-clients/cloud-controller
+  go install -o istio-client code.cloudfoundry.org/copilot/cmd/copilot-clients/istio
 popd
 
 # clean up source artifacts
