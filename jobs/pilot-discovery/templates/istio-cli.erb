@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+/var/vcap/packages/copilot/bin/istio-client \
+    -address <%= p('copilot.address') %> \
+    -client-cert /var/vcap/jobs/pilot-discovery/config/certs/client.crt \
+    -client-key /var/vcap/jobs/pilot-discovery/config/certs/client.key \
+    -server-ca /var/vcap/jobs/pilot-discovery/config/certs/ca.crt \
+    "$@"

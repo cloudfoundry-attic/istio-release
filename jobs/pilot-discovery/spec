@@ -6,9 +6,12 @@ templates:
   certs/ca.crt.erb: config/certs/ca.crt
   certs/client.crt.erb: config/certs/client.crt
   certs/client.key.erb: config/certs/client.key
+  capi-cli.erb: bin/capi-cli
+  istio-cli.erb: bin/istio-cli
 
 packages:
 - pilot
+- copilot
 - golang-1.9-linux
 
 properties:
