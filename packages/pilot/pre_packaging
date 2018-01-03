@@ -25,4 +25,5 @@ popd
 mkdir -p ${BUILD_DIR}/istio.io/istio
 mv ${BUILD_DIR}/src/istio.io/istio/pilot ${BUILD_DIR}/istio.io/istio/
 mv ${BUILD_DIR}/src/istio.io/istio/vendor ${BUILD_DIR}/istio.io/istio/
+mv ${BUILD_DIR}/src/istio.io/istio/pkg ${BUILD_DIR}/istio.io/istio/
 rm -rf ${BUILD_DIR}/src
