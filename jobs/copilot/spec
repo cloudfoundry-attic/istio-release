@@ -17,7 +17,7 @@ packages:
 properties:
   copilot.listen_address:
     description: "The address that copilot server listens on"
-    default: 127.0.0.1:9000
+    default: 0.0.0.0:9000
   copilot.client_ca_cert:
     description: "PEM-encoded CA certificate used to communicate with the client"
   copilot.server_cert:
