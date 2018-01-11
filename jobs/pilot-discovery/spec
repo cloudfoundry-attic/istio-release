@@ -14,6 +14,10 @@ packages:
 - copilot
 - golang-1.9-linux
 
+provides:
+- name: pilot
+  type: pilot
+
 properties:
   copilot.server_ca_cert:
     description: "PEM-encoded CA certificate used to communicate with copilot-server"

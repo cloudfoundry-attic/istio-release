@@ -1,4 +1,11 @@
-{
+<%=
+
+  pilots = []
+  link("pilot").instances.each do |instance|
+    pilots << {"url": "tcp://#{instance.address}:8080"}
+  end
+
+config = {
   "listeners": [],
   "lds": {
     "cluster": "pilot-sd"
@@ -14,7 +21,7 @@
         "type": "static",
         "connect_timeout_ms": 250,
         "lb_type": "round_robin",
-        "hosts": [ {"url": "tcp://10.244.0.142:8080"} ]
+        "hosts": pilots,
       }
     },
     "sds": {
@@ -23,7 +30,7 @@
         "type": "static",
         "connect_timeout_ms": 250,
         "lb_type": "round_robin",
-        "hosts": [ {"url": "tcp://10.244.0.142:8080"} ]
+        "hosts": pilots,
       },
       "refresh_delay_ms": 150
     },
@@ -33,16 +40,19 @@
         "type": "static",
         "connect_timeout_ms": 250,
         "lb_type": "round_robin",
-        "hosts": [ {"url": "tcp://10.244.0.142:8080"} ]
+        "hosts": pilots,
       },
       {
         "name": "rds",
         "type": "static",
         "connect_timeout_ms": 250,
         "lb_type": "round_robin",
-        "hosts": [ {"url": "tcp://10.244.0.142:8080"} ]
+        "hosts": pilots,
       }
-
     ]
   }
 }
+config.to_json()
+
+%>
+
