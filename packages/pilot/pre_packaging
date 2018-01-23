@@ -15,9 +15,8 @@ pushd ${BUILD_DIR}/src/istio.io/istio
   # BUILD_DIR. A .git file isn't necessary to run dep,
   # but it does confuse dep if it's there (and invalid).
   rm -rf .git
-  # we don't want people accidentally committing things that seem to work
-  # but only because they ran `dep ensure` locally
-  rm -rf vendor Gopkg.lock
+
+  # acquire specific dependencies as they are listed in the lock
   dep ensure -v
 popd
 
