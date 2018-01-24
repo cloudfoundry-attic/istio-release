@@ -1,0 +1,4 @@
+set -e
+
+mkdir -p ${BOSH_INSTALL_TARGET}/bin
+cp grpcurl-linux/grpcurl ${BOSH_INSTALL_TARGET}/bin
