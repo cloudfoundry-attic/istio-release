@@ -5,9 +5,12 @@ mkdir ${BUILD_DIR}/src
 mv ${BUILD_DIR}/code.cloudfoundry.org ${BUILD_DIR}/src/code.cloudfoundry.org
 GOPATH=${BUILD_DIR}
 
-go get -u github.com/golang/dep/cmd/dep
+os="$(uname -s)"
 
-export PATH=$PATH:$GOPATH/bin
+case "${os}" in
+   Linux*)  binary="dep-linux-0.3.2";;
+   Darwin*)  binary="dep-darwin-0.3.2";;
+esac
 
 pushd ${BUILD_DIR}/src/code.cloudfoundry.org/copilot
   # Since copilot is a submodule, its .git file contains a relative path reference
@@ -15,10 +18,9 @@ pushd ${BUILD_DIR}/src/code.cloudfoundry.org/copilot
   # BUILD_DIR. A .git file isn't necessary to run dep,
   # but it does confuse dep if it's there (and invalid).
   rm -rf .git
-  # we don't want people accidentally committing things that seem to work
-  # but only because they ran `dep ensure` locally
-  rm -rf vendor
-  dep ensure
+
+  # acquire specific dependencies as they are listed in the lock
+  "${BUILD_DIR}/dep/${binary}" ensure -v
 popd
 
 # clean up directory structure only needed for running dep

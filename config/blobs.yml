@@ -1,3 +1,11 @@
+dep/dep-darwin-0.3.2:
+  size: 11839108
+  object_id: 7a737cd8-3990-4423-583c-7662a37218ea
+  sha: 877cdc0847be282836114ecae97409da75386144
+dep/dep-linux-0.3.2:
+  size: 11869375
+  object_id: a2f06f40-e57e-4133-7cad-9d1f4de1f69a
+  sha: 60db94150d4ebcb2507037fba36850bbef2b241d
 envoy-linux/envoy-v1.5.0.tgz:
   size: 3762978
   object_id: ac038c52-d35a-4e68-743c-0de52091da92

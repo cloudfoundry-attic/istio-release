@@ -1,6 +1,6 @@
 ---
 final_name: istio
 blobstore:
-  provider: s3
+  provider: gcs
   options:
     bucket_name: istio-release-blobs

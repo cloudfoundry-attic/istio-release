@@ -5,9 +5,12 @@ mkdir ${BUILD_DIR}/src
 mv ${BUILD_DIR}/istio.io ${BUILD_DIR}/src/istio.io
 GOPATH=${BUILD_DIR}
 
-go get -u github.com/golang/dep/cmd/dep
+os="$(uname -s)"
 
-export PATH=$PATH:$GOPATH/bin
+case "${os}" in
+   Linux*)  binary="dep-linux-0.3.2";;
+   Darwin*)  binary="dep-darwin-0.3.2";;
+esac
 
 pushd ${BUILD_DIR}/src/istio.io/istio
   # Since isio is a submodule, its .git file contains a relative path reference
@@ -17,7 +20,7 @@ pushd ${BUILD_DIR}/src/istio.io/istio
   rm -rf .git
 
   # acquire specific dependencies as they are listed in the lock
-  dep ensure -v
+  "${BUILD_DIR}/dep/${binary}" ensure -v
 popd
 
 # clean up directory structure only needed for running dep
