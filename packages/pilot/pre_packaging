@@ -12,6 +12,8 @@ case "${os}" in
    Darwin*)  binary="dep-darwin-0.3.2";;
 esac
 
+chmod +x "${BUILD_DIR}/dep/${binary}"
+
 pushd ${BUILD_DIR}/src/istio.io/istio
   # Since isio is a submodule, its .git file contains a relative path reference
   # into istio-release's .git directory. That directory is not available in the
