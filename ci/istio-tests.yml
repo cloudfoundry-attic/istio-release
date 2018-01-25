@@ -8,4 +8,5 @@ image_resource:
 inputs:
 - name: istio-release
 
-file: istio-release/test-linux.sh
+run:
+  path: istio-release/test-linux.sh
