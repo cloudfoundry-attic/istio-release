@@ -8,8 +8,8 @@ GOPATH=${BUILD_DIR}
 os="$(uname -s)"
 
 case "${os}" in
-   Linux*)  binary="dep-linux-0.3.2";;
-   Darwin*)  binary="dep-darwin-0.3.2";;
+   Linux*)  binary="dep-linux-0.4.1";;
+   Darwin*)  binary="dep-darwin-0.4.1";;
 esac
 
 chmod +x "${BUILD_DIR}/dep/${binary}"
