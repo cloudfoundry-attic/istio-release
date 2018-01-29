@@ -1,15 +1,7 @@
-dep/dep-darwin-0.3.2:
-  size: 11839108
-  object_id: 7a737cd8-3990-4423-583c-7662a37218ea
-  sha: 877cdc0847be282836114ecae97409da75386144
 dep/dep-darwin-0.4.1:
   size: 12509684
   object_id: 2672f8fc-a242-45ec-4d9e-8d88c989d7c7
   sha: 0d5f9f915f0ca01aa47899116cdd9738870ae7fe
-dep/dep-linux-0.3.2:
-  size: 11869375
-  object_id: a2f06f40-e57e-4133-7cad-9d1f4de1f69a
-  sha: 60db94150d4ebcb2507037fba36850bbef2b241d
 dep/dep-linux-0.4.1:
   size: 12541409
   object_id: 160c0949-e3e5-4898-5344-afcab2d37adf
