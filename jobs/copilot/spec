@@ -3,7 +3,8 @@ name: copilot
 templates:
   bpm.yml.erb: config/bpm.yml
   config.json.erb: config/config.json
-  certs/ca.crt.erb: config/certs/ca.crt
+  certs/pilot-client-ca.crt.erb: config/certs/pilot-client-ca.crt
+  certs/cloud-controller-client-ca.crt.erb: config/certs/cloud-controller-client-ca.crt
   certs/server.crt.erb: config/certs/server.crt
   certs/server.key.erb: config/certs/server.key
   bbs/certs/ca.crt.erb: config/bbs/certs/ca.crt
@@ -14,28 +15,47 @@ packages:
 - copilot
 - golang-1.9-linux
 
+provides:
+- name: pilot_to_copilot_conn
+  type: pilot_to_copilot_conn
+  properties:
+  - listen_port_for_pilot
+
+- name: cloud_controller_to_copilot_conn
+  type: cloud_controller_to_copilot_conn
+  properties:
+  - listen_port_for_cloud_controller
+
 properties:
-  copilot.listen_address:
-    description: "The address that copilot server listens on"
-    default: 0.0.0.0:9000
-  copilot.client_ca_cert:
-    description: "PEM-encoded CA certificate used to communicate with the client"
-  copilot.server_cert:
-    description: "PEM-encoded server certificate used to communicate with the client"
-  copilot.server_key:
-    description: "PEM-encoded server private key used to communicate with the client"
-  copilot.bbs.server_ca_cert:
-    description: "PEM-encoded CA certificate used to communicate with the bbs server"
-  copilot.bbs.client_cert:
-    description: "PEM-encoded client certificate used to communicate with the bbs server"
-  copilot.bbs.client_key:
-    description: "PEM-encoded client private key used to communicate with the bbs server"
-  copilot.bbs.address:
-    description: "Address of the bbs server"
+  listen_port_for_pilot:
+    description: "The port that Pilot platform adapter will connect to, to retrieve route info"
+    default: 9000
+  pilot_client_ca_cert:
+    description: "PEM-encoded CA certificate that signed the client cert used by Pilot platform adapter"
+
+  listen_port_for_cloud_controller:
+    description: "The port that Cloud Controller will connect to, to provide route info"
+    default: 9001
+  cloud_controller_client_ca_cert:
+    description: "PEM-encoded CA certificate that signed the client cert used by Cloud Controller"
+
+  server_cert:
+    description: "PEM-encoded server certificate used to communicate with all clients"
+  server_key:
+    description: "PEM-encoded server private key used to communicate with all clients"
+
+  bbs.server_ca_cert:
+    description: "PEM-encoded CA certificate that signed BBS's server cert"
+  bbs.client_cert:
+    description: "PEM-encoded client certificate used to connect to BBS"
+  bbs.client_key:
+    description: "PEM-encoded client private key used to connect to BBS"
+  bbs.address:
+    description: "Address of BBS"
     default: https://bbs.service.cf.internal:8889
-  copilot.bbs.client_session_cache_size:
+  bbs.client_session_cache_size:
     description: "Capacity of the tls client cache"
     default: 0
-  copilot.bbs.max_idle_conns_per_host:
+  bbs.max_idle_conns_per_host:
     description: "Maximum number of idle http connections"
     default: 0
