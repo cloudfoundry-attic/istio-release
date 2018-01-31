@@ -7,6 +7,7 @@ function has_upstream() {
 
 has_upstream && git pull
 
+git submodule sync
 git submodule update --init --recursive
 
 echo "Istio Release has been updated"
