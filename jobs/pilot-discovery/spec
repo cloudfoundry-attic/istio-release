@@ -27,7 +27,7 @@ properties:
     description: "PEM-encoded client private key used to communicate with copilot-server"
   copilot.address:
     description: "Address of the copilot-server"
-    default: 127.0.0.1:9000
+    default: copilot.service.cf.internal:9000
   copilot.poll_interval:
     description: "Interval on which pilot polls the copilot-server"
     default: 60s
