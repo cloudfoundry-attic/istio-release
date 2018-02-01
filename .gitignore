@@ -11,3 +11,4 @@
 .final_builds/packages/**/*.tgz
 .idea/
 out
+.DS_Store
