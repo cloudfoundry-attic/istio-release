@@ -4,7 +4,7 @@ processes:
   executable: /var/vcap/packages/pilot/bin/pilot-discovery
   args:
   - discovery
-  - --configDir=/dev/null
+  - --configDir=/var/vcap/jobs/pilot-discovery/config/istio
   - --registries=CloudFoundry
   - --cfConfig=/var/vcap/jobs/pilot-discovery/config/cf_config.yml
   - --meshConfig=/dev/null
