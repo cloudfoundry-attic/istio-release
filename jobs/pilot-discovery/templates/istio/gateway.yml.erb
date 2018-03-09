@@ -1,0 +1,16 @@
+apiVersion: config.istio.io/v1alpha2
+kind: Gateway
+metadata:
+  name: cloudfoundry-ingress
+spec:
+  servers:
+  - port:
+      number: 80
+      protocol: http
+    hosts:
+    - "*"
+  - port:
+      number: 443
+      protocol: http
+    hosts:
+    - "*"
