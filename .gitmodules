@@ -1,6 +1,6 @@
 [submodule "src/code.cloudfoundry.org/copilot"]
 	path = src/code.cloudfoundry.org/copilot
-	url = https://github.com/cloudfoundry-incubator/copilot
+	url = https://github.com/cloudfoundry/copilot
 [submodule "src/istio.io/istio"]
 	path = src/istio.io/istio
 	url = https://github.com/istio/istio
