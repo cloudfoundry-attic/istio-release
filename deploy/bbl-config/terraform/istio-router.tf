@@ -43,7 +43,7 @@ resource "google_compute_firewall" "cf-istio-router-health-check" {
 }
 
 resource "google_compute_forwarding_rule" "cf-istio-router-http" {
-  name        = "${var.env_id}-cf-istio-router"
+  name        = "${var.env_id}-cf-istio-router-http"
   target      = "${google_compute_target_pool.cf-istio-router.self_link}"
   port_range  = "80"
   ip_protocol = "TCP"
@@ -51,7 +51,7 @@ resource "google_compute_forwarding_rule" "cf-istio-router-http" {
 }
 
 resource "google_compute_forwarding_rule" "cf-istio-router-https" {
-  name        = "${var.env_id}-cf-istio-router"
+  name        = "${var.env_id}-cf-istio-router-https"
   target      = "${google_compute_target_pool.cf-istio-router.self_link}"
   port_range  = "443"
   ip_protocol = "TCP"
