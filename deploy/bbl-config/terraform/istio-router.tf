@@ -29,7 +29,7 @@ resource "google_compute_firewall" "cf-istio-router" {
 }
 
 resource "google_compute_firewall" "cf-istio-router-health-check" {
-  name       = "${var.env_id}-cf-istio-router"
+  name       = "${var.env_id}-cf-istio-router-health-check"
   depends_on = ["google_compute_network.bbl-network"]
   network    = "${google_compute_network.bbl-network.name}"
 
