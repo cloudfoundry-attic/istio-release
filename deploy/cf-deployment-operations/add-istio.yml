@@ -102,6 +102,10 @@
   value:
     - "*.istio-control.default.cf.bosh"
 
+- type: replace
+  path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/app_domains?/-
+  value: "istio.((system_domain))"
+
 # enable copilot in CAPI
 - type: replace
   path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/copilot?
