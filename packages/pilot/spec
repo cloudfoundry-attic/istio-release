@@ -1,6 +1,11 @@
 ---
 name: pilot
+
 dependencies:
 - golang-1.9-linux
+
 files:
 - istio.io/istio/**/*
+
+excluded_files:
+- istio.io/istio/vendor/k8s.io/helm/pkg/chartutil/testdata/joonix/charts/frobnitz
