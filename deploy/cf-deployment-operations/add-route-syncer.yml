@@ -1,0 +1,31 @@
+---
+- type: replace
+  path: /instance_groups/name=cc-route-syncer?
+  value:
+   name: cc-route-syncer
+   networks:
+   - name: default
+   stemcell: default
+   vm_type: small
+   azs:
+   - z1
+   - z2
+   instances: 1
+   jobs:
+   - name: bpm
+     release: bpm
+   - name: cc_route_syncer
+     release: capi
+     properties:
+       bpm:
+         enable: true
+       ccdb:
+         databases:
+         - name: cloud_controller
+           tag: cc
+         db_scheme: mysql
+         port: 3306
+         roles:
+         - name: cloud_controller
+           password: ((cc_database_password))
+           tag: admin
