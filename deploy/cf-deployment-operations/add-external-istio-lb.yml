@@ -1,0 +1,5 @@
+---
+- type: replace
+  path: /instance_groups/name=istio-router/vm_extensions?
+  value:
+  - cf-istio-router-network-properties
