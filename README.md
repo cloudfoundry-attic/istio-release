@@ -3,7 +3,7 @@
 This repo is a [BOSH release](https://github.com/cloudfoundry/bosh) that
 packages [Istio](https://istio.io/) and [Envoy](https://github.com/envoyproxy/envoy) for Cloud Foundry.
 
-This release is under heavy development and not yet ready for use.
+> **Note:** This release is under heavy development and not yet ready for use.
 
 ## Setup a `cf-deployment` environment with `istio-release`
 [cf-deployment-concourse-tasks](https://github.com/cloudfoundry/cf-deployment-concourse-tasks) v6
