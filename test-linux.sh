@@ -17,5 +17,6 @@ pushd src/istio.io/istio
   dep ensure
   make localTestEnv
   make pilot-test
+  make test/local/cloudfoundry/e2e_pilotv2
 popd
 
