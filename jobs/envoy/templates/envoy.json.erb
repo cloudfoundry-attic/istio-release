@@ -2,54 +2,48 @@
 
   pilots = []
   link("pilot").instances.each do |instance|
-    pilots << {"url": "tcp://#{instance.address}:8080"}
+    pilots << {"socket_address": {"address": "#{instance.address}", "port_value": "8080", "protocol": "TCP"}}
   end
 
 config = {
-  "listeners": [],
-  "lds": {
-    "cluster": "pilot-sd"
-  },
   "admin": {
-    "access_log_path": "/dev/null",
-    "address": "tcp://0.0.0.0:8001"
-  },
-  "cluster_manager": {
-    "cds": {
-      "cluster": {
-        "name": "pilot-cds",
-        "type": "static",
-        "connect_timeout_ms": 250,
-        "lb_type": "round_robin",
-        "hosts": pilots,
+    "access_log_path": "/dev/stdout",
+    "address": {
+      "socket_address": {
+        "address": "0.0.0.0",
+        "port_value": 8001
       }
-    },
-    "sds": {
-      "cluster": {
-        "name": "pilot-sds",
-        "type": "static",
-        "connect_timeout_ms": 250,
-        "lb_type": "round_robin",
-        "hosts": pilots,
-      },
-      "refresh_delay_ms": 150
-    },
+    }
+  },
+  "static_resources": {
+    "listeners": [],
     "clusters": [
       {
         "name": "pilot-sd",
-        "type": "static",
-        "connect_timeout_ms": 250,
-        "lb_type": "round_robin",
+        "type": "STATIC",
+        "connect_timeout": {
+          "nanos": 250_000_000
+        },
+        "lb_policy": "ROUND_ROBIN",
         "hosts": pilots,
       },
-      {
-        "name": "rds",
-        "type": "static",
-        "connect_timeout_ms": 250,
-        "lb_type": "round_robin",
-        "hosts": pilots,
-      }
     ]
+  },
+  "dynamic_resources": {
+    "lds_config": {
+      "ads": {}
+     },
+    "cds_config": {
+      "ads": {}
+    },
+    "ads_config": {
+      "api_type": "GRPC",
+      "refresh_delay": {
+        "seconds": 0,
+        "nanos": 150_000_000
+      },
+      "cluster_names": [ "pilot-sd" ]
+    },
   }
 }
 config.to_json()
