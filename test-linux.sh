@@ -7,8 +7,8 @@ export GOPATH=${PWD}
 export PATH=$PATH:$GOPATH/bin
 
 # Setup iptables REDIRECT rule for CloudFoundry Pilot test
-sudo apt update
-sudo apt install -y iptables
+sudo apt update -qq
+sudo apt install -yqq iptables
 sudo iptables -t nat -A OUTPUT -d 127.1.1.1/32 -p tcp -j REDIRECT --to-port 15001
 
 pushd src/code.cloudfoundry.org/copilot
