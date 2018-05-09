@@ -6,10 +6,10 @@ dep/dep-linux-0.4.1:
   size: 12541409
   object_id: 160c0949-e3e5-4898-5344-afcab2d37adf
   sha: e89694dfecb7507af7d83214827cf3d8392766f4
-envoy-linux/envoy-v1.6.0.tgz:
-  size: 4376989
-  object_id: ea8f577c-c41d-4cfe-537f-71d122aab9e6
-  sha: b5d6cc5062ca46be5ce91a7b44ea86e2bd9d5a07
+envoy-linux/envoy-v1.7.0.tgz:
+  size: 11684864
+  object_id: 9ca5f010-e856-4ddf-7a7d-b524cdb20f50
+  sha: aee69312d6b59487079b8ee41cf91dc2b0d4b730
 grpcurl-linux/grpcurl:
   size: 12377050
   object_id: f43cf744-2cd4-487e-6a2b-dc53e00cfd91
