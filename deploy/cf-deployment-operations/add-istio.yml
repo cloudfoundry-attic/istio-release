@@ -124,3 +124,27 @@
       extended_key_usage:
       - client_auth
     type: certificate
+
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=pilot-discovery?
+  value:
+    name: pilot-discovery
+    release: istio
+    provides:
+      pilot: { as: diego-cell-pilot }
+    properties:
+      copilot:
+        server_ca_cert: "((copilot.ca))"
+        client_cert: "((pilot.certificate))"
+        client_key: "((pilot.private_key))"
+      bpm:
+        enable: true
+
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=silk-cni/properties?/host_tcp_services
+  value: ["169.254.0.2:8080","169.254.0.2:15012","169.254.0.2:15010"]
+
+- type: replace
+  path: /instance_groups/name=istio-router/jobs/name=envoy/consumes?
+  value:
+    pilot: {from: pilot}

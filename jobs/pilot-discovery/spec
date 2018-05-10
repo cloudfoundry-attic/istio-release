@@ -20,6 +20,9 @@ provides:
   type: pilot
 
 properties:
+  port:
+    description: "Listen port for pilot discovery service"
+    default: 8080
   copilot.server_ca_cert:
     description: "PEM-encoded CA certificate used to communicate with copilot-server"
   copilot.client_cert:
