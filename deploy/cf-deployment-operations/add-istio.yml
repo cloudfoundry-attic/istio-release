@@ -126,6 +126,12 @@
     type: certificate
 
 - type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=bpm?
+  value:
+    name: bpm
+    release: bpm
+
+- type: replace
   path: /instance_groups/name=diego-cell/jobs/name=pilot-discovery?
   value:
     name: pilot-discovery
