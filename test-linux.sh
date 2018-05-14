@@ -6,11 +6,6 @@ cd "$(dirname "$0")"
 export GOPATH=${PWD}
 export PATH=$PATH:$GOPATH/bin
 
-# Setup iptables REDIRECT rule for CloudFoundry Pilot test
-sudo apt update -qq
-sudo apt install -yqq iptables
-sudo iptables -t nat -A OUTPUT -d 127.1.1.1/32 -p tcp -j REDIRECT --to-port 15001
-
 pushd src/code.cloudfoundry.org/copilot
   dep ensure
   go install ./vendor/github.com/onsi/ginkgo/ginkgo
@@ -24,6 +19,3 @@ pushd src/istio.io/istio
   make pilot-test
   make test/local/cloudfoundry/e2e_pilotv2
 popd
-
-# Clean up iptables rule
-sudo iptables -t nat -D OUTPUT -d 127.1.1.1/32 -p tcp -j REDIRECT --to-port 15001
