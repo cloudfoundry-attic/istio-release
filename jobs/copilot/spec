@@ -44,6 +44,10 @@ properties:
   server_key:
     description: "PEM-encoded server private key used to communicate with all clients"
 
+  experimental_vip_cidr:
+    description: "Virtual IP addresses for internal routes will be assigned out of this CIDR range."
+    default: "127.128.0.0/9"
+
   bbs.server_ca_cert:
     description: "PEM-encoded CA certificate that signed BBS's server cert"
   bbs.client_cert:
