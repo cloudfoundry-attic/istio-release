@@ -18,8 +18,6 @@
     - z2
     instances: 1
     jobs:
-    - name: bpm
-      release: bpm
     - name: pilot-discovery
       release: istio
       properties:
@@ -54,8 +52,6 @@
     - z2
     instances: 2
     jobs:
-    - name: bpm
-      release: bpm
     - name: envoy
       release: istio
       properties: {}
