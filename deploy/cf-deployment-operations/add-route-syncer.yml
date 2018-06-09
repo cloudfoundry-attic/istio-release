@@ -12,8 +12,6 @@
    - z2
    instances: 1
    jobs:
-   - name: bpm
-     release: bpm
    - name: cc_route_syncer
      release: capi
      properties:
