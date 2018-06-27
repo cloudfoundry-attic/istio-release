@@ -8,4 +8,5 @@ processes:
   - --registries=CloudFoundry
   - --cfConfig=/var/vcap/jobs/pilot-discovery/config/cf_config.yml
   - --meshConfig=/dev/null
+  - --plugins=health
   - --port=<%= p('port') %>
