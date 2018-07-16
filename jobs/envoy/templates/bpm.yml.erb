@@ -4,7 +4,7 @@ processes:
   executable: /var/vcap/packages/envoy/bin/envoy
   args:
   - -c /var/vcap/jobs/envoy/config/envoy.json
-  - --max-obj-name-len 100
+  - --max-obj-name-len 200
   - --service-cluster x
   - --service-node router~x~x~x
   - --v2-config-only
