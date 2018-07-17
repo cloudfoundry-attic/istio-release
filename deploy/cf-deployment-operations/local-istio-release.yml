@@ -1,0 +1,7 @@
+---
+- type: replace
+  path: /releases/name=istio
+  value:
+    name: istio
+    url: file:///Users/pivotal/workspace/istio-release
+    version: create
