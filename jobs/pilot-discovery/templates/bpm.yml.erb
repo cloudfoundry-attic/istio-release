@@ -9,4 +9,4 @@ processes:
   - --cfConfig=/var/vcap/jobs/pilot-discovery/config/cf_config.yml
   - --meshConfig=/dev/null
   - --plugins=health
-  - --port=<%= p('port') %>
+  - --httpAddr=0.0.0.0:<%= p('port') %>
