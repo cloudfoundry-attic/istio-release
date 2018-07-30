@@ -86,14 +86,26 @@
       - client_auth
 
 - type: replace
-  path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/copilot.service.cf.internal?
+  path: /addons/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties/aliases/-
   value:
-    - "*.istio-control.default.cf.bosh"
+    domain: copilot.service.cf.internal
+    targets:
+    - deployment: cf
+      domain: bosh
+      instance_group: istio-control
+      network: default
+      query: "*"
 
 - type: replace
-  path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/pilot.service.cf.internal?
+  path: /addons/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties/aliases/-
   value:
-    - "*.istio-control.default.cf.bosh"
+    domain: pilot.service.cf.internal
+    targets:
+    - deployment: cf
+      domain: bosh
+      instance_group: istio-control
+      network: default
+      query: "*"
 
 - type: replace
   path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/app_domains?/-
