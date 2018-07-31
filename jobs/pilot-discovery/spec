@@ -13,7 +13,7 @@ templates:
 packages:
 - pilot
 - grpcurl
-- golang-1.9-linux
+- golang-1-linux
 
 provides:
 - name: pilot

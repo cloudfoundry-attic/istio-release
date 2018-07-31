@@ -4,7 +4,7 @@ mkdir -p ${BOSH_INSTALL_TARGET}/src
 cp -a . ${BOSH_INSTALL_TARGET}/src
 export GOPATH=${BOSH_INSTALL_TARGET}
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang-1.9-linux)
+export GOROOT=$(readlink -nf /var/vcap/packages/golang-*-linux)
 export PATH=$GOROOT/bin:$PATH
 pushd $GOPATH/src
   go install code.cloudfoundry.org/copilot/cmd/copilot-server

@@ -2,7 +2,7 @@
 name: pilot
 
 dependencies:
-- golang-1.9-linux
+- golang-1-linux
 
 files:
 - istio.io/istio/**/*
