@@ -12,7 +12,7 @@
     networks:
     - name: default
     stemcell: default
-    vm_type: small
+    vm_type: medium
     azs:
     - z1
     - z2
