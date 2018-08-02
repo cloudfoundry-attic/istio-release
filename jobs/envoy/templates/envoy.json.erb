@@ -43,8 +43,12 @@ config = {
     },
     "ads_config": {
       "api_type": "GRPC",
-      "cluster_names": [ "pilot-sd" ]
-    },
+      "grpc_services": {
+        "envoy_grpc": {
+          "cluster_name": "pilot-sd"
+        }
+      }
+    }
   }
 }
 config.to_json()
