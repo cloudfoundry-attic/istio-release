@@ -2,8 +2,6 @@
 processes:
 - name: pilot-discovery
   executable: /var/vcap/packages/pilot/bin/pilot-discovery
-  env:
-    PILOT_ALLOW_CONCURRENT: "true"
   args:
   - discovery
   - --configDir=/var/vcap/jobs/pilot-discovery/config/istio
@@ -12,3 +10,6 @@ processes:
   - --meshConfig=/dev/null
   - --plugins=health
   - --httpAddr=0.0.0.0:<%= p('port') %>
+  env:
+    PILOT_ALLOW_CONCURRENT: "true"
+    V2_REFRESH: "30s"
