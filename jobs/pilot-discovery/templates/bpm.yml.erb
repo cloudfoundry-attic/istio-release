@@ -2,6 +2,8 @@
 processes:
 - name: pilot-discovery
   executable: /var/vcap/packages/pilot/bin/pilot-discovery
+  env:
+    PILOT_ALLOW_CONCURRENT: "true"
   args:
   - discovery
   - --configDir=/var/vcap/jobs/pilot-discovery/config/istio
