@@ -48,6 +48,9 @@ properties:
     description: "Virtual IP addresses for internal routes will be assigned out of this CIDR range."
     default: "127.128.0.0/9"
 
+  bbs.sync_interval:
+    description: "Interval at which copilot will query diego for all LRPs and replace its state"
+    default: 30s
   bbs.server_ca_cert:
     description: "PEM-encoded CA certificate that signed BBS's server cert"
   bbs.client_cert:

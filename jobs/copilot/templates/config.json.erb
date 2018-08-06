@@ -12,6 +12,7 @@
     "ClientKeyPath": "/var/vcap/jobs/copilot/config/bbs/certs/client.key",
     "Address": "<%= p('bbs.address') %>",
     "ClientSessionCacheSize": <%= p('bbs.client_session_cache_size') %>,
-    "MaxIdleConnsPerHost": <%= p('bbs.max_idle_conns_per_host') %>
+    "MaxIdleConnsPerHost": <%= p('bbs.max_idle_conns_per_host') %>,
+    "SyncInterval": "<%= p('bbs.sync_interval') %>"
   }
 }
