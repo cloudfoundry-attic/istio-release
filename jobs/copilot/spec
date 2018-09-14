@@ -26,20 +26,10 @@ provides:
   properties:
   - listen_port_for_cloud_controller
 
-- name: mcp_conn
-  type: mcp_conn
-  properties:
-  - listen_port_for_mcp
-
 properties:
   listen_port_for_pilot:
     description: "The port that Pilot platform adapter will connect to, to retrieve route info"
     default: 9000
-
-  listen_port_for_mcp:
-    description: "The port that Pilot MCP client will connect to, to retrieve route info"
-    default: 9009
-
   pilot_client_ca_cert:
     description: "PEM-encoded CA certificate that signed the client cert used by Pilot platform adapter"
 

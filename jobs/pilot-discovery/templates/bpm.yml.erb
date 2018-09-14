@@ -10,7 +10,6 @@ processes:
   - --meshConfig=/dev/null
   - --plugins=health
   - --httpAddr=0.0.0.0:<%= p('port') %>
-  - --mcpServerAddrs=0.0.0.0:<%= link('mcp_conn').p('listen_port_for_mcp') %>
   env:
     PILOT_ALLOW_CONCURRENT: "true"
     V2_REFRESH: "30s"
