@@ -3,7 +3,6 @@ name: pilot-discovery
 templates:
   bpm.yml.erb: config/bpm.yml
   cf_config.yml.erb: config/cf_config.yml
-  istio/gateway.yml.erb: config/istio/gateway.yml
   certs/ca.crt.erb: config/certs/ca.crt
   certs/client.crt.erb: config/certs/client.crt
   certs/client.key.erb: config/certs/client.key
@@ -18,6 +17,11 @@ packages:
 provides:
 - name: pilot
   type: pilot
+
+consumes:
+- name: mcp_conn
+  type: mcp_conn
+  optional: true
 
 properties:
   port:
