@@ -9,10 +9,10 @@ processes:
   - --meshConfig=/dev/null
   - --plugins=health
   - --httpAddr=0.0.0.0:<%= p('port') %>
-  - --mcpServerAddrs=mcps://0.0.0.0:<%= link('mcp_conn').p('listen_port_for_mcp') %>
-  - --certFile=/var/vcap/jobs/pilot-discovery/config/certs/client.crt
-  - --keyFile=/var/vcap/jobs/pilot-discovery/config/certs/client.key
-  - --caCertFile=/var/vcap/jobs/pilot-discovery/config/certs/ca.crt
+  - --mcpServerAddrs=mcp://0.0.0.0:<%= link('mcp_conn').p('listen_port_for_mcp') %>
+  <%# - --certFile=/var/vcap/jobs/pilot-discovery/config/certs/client.crt %>
+  <%# - --keyFile=/var/vcap/jobs/pilot-discovery/config/certs/client.key %>
+  <%# - --caCertFile=/var/vcap/jobs/pilot-discovery/config/certs/ca.crt %>
   env:
     PILOT_ALLOW_CONCURRENT: "true"
     V2_REFRESH: "30s"
