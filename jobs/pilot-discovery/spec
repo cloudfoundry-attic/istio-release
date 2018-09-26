@@ -2,7 +2,6 @@
 name: pilot-discovery
 templates:
   bpm.yml.erb: config/bpm.yml
-  cf_config.yml.erb: config/cf_config.yml
   certs/ca.crt.erb: config/certs/ca.crt
   certs/client.crt.erb: config/certs/client.crt
   certs/client.key.erb: config/certs/client.key
@@ -36,6 +35,3 @@ properties:
   copilot.address:
     description: "Address of the copilot-server"
     default: copilot.service.cf.internal:9000
-  copilot.poll_interval:
-    description: "Interval on which pilot polls the copilot-server"
-    default: 60s
