@@ -1,0 +1,28 @@
+---
+- type: replace
+  path: /instance_groups/name=diego-cell/vm_type
+  value: n1-highmem-4
+
+- type: replace
+  path: /instance_groups/name=diego-cell/instances
+  value: 50
+
+- type: replace
+  path: /instance_groups/name=nozzle/instances
+  value: 5
+
+- type: replace
+  path: /instance_groups/name=api/instances
+  value: 10
+
+- type: replace
+  path: /instance_groups/name=cc-worker/instances
+  value: 5
+
+- type: replace
+  path: /instance_groups/name=istio-control/vm_type
+  value: n1-highcpu-8
+
+- type: replace
+  path: /update/max_in_flight
+  value: 7
