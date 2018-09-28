@@ -16,5 +16,7 @@ This directory contains config used to deploy Istio Release using CF Deployment 
 ## Specialized
 - local-istio-release.yml is used for building and deploying a development version
   of istio release.
-- scale-diego-cells.yml is currently being used only during scale testing. More
+- scale-diego-for-ci.yml is currently being used only during scale testing. More
   diego cells means more apps.
+- scaling-test.yml scales capi/cells/istio-control/nozzle to make sure
+  environment can handle over 10K applications (could be increased in future)
