@@ -9,6 +9,7 @@ processes:
   - --meshConfig=/dev/null
   - --plugins=health
   - --httpAddr=0.0.0.0:<%= p('port') %>
+  - --mcpMaxMsgSize=8388608
   - --mcpServerAddrs=mcps://copilot.service.cf.internal:<%= link('mcp_conn').p('listen_port_for_mcp') %>
   - --certFile=/var/vcap/jobs/pilot-discovery/config/certs/client.crt
   - --keyFile=/var/vcap/jobs/pilot-discovery/config/certs/client.key
