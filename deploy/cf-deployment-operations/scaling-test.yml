@@ -5,11 +5,11 @@
 
 - type: replace
   path: /instance_groups/name=diego-cell/instances
-  value: 50
+  value: 100
 
 - type: replace
   path: /instance_groups/name=nozzle/instances
-  value: 5
+  value: 7
 
 - type: replace
   path: /instance_groups/name=api/instances
@@ -25,4 +25,4 @@
 
 - type: replace
   path: /update/max_in_flight
-  value: 7
+  value: 12
