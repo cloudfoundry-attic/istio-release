@@ -54,6 +54,8 @@
     jobs:
     - name: envoy
       release: istio
+      consumes:
+        pilot: {from: pilot}
       properties: {}
     - name: silk-daemon
       properties:
@@ -151,11 +153,6 @@
 - type: replace
   path: /instance_groups/name=diego-cell/jobs/name=silk-cni/properties?/host_tcp_services
   value: ["169.254.0.2:8080","169.254.0.2:15012","169.254.0.2:15010"]
-
-- type: replace
-  path: /instance_groups/name=istio-router/jobs/name=envoy/consumes?
-  value:
-    pilot: {from: pilot}
 
 - type: replace
   path: /instance_groups/name=cc-route-syncer?
