@@ -114,6 +114,12 @@
   value:
     name: "istio.((system_domain))"
 
+- type: replace
+  path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/app_domains/-
+  value:
+    name: "istio.apps.internal"
+    internal: true
+
 # enable copilot in CAPI
 - type: replace
   path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/copilot?
@@ -153,6 +159,18 @@
 - type: replace
   path: /instance_groups/name=diego-cell/jobs/name=silk-cni/properties?/host_tcp_services
   value: ["169.254.0.2:8080","169.254.0.2:15012","169.254.0.2:15010"]
+
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=bosh-dns-adapter/properties?/internal_service_mesh_domains
+  value: ["istio.apps.internal."]
+
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=garden-cni/properties?/experimental_proxy_redirect_cidr
+  value: "127.128.0.0/9"  # TODO: make this a link consuming copilot.experimental_vip_cidr
+
+- type: replace
+  path: /instance_groups/name=diego-cell/jobs/name=rep/properties?/containers/proxy/ads_addresses
+  value: [ "169.254.0.2:15010" ]
 
 - type: replace
   path: /instance_groups/name=cc-route-syncer?
