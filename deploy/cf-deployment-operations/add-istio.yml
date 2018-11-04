@@ -108,11 +108,9 @@
       query: "*"
 
 - type: replace
-  path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/app_domains?
+  path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/app_domains/-
   value:
-    - name: "apps.internal"
-      internal: true
-    - name: "istio.((system_domain))"
+    name: "istio.((system_domain))"
 
 # enable copilot in CAPI
 - type: replace
