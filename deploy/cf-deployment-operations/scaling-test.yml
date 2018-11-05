@@ -1,4 +1,6 @@
 ---
+# scaling to 100 diego-cells, scaling numbers inspired by
+# https://github.com/cloudfoundry/diego-notes/blob/master/proposals/measuring_performance.md#instance-sizing-used-for-the-50k-instance-experiment
 - type: replace
   path: /instance_groups/name=diego-cell/vm_type
   value: n1-highmem-4
@@ -8,10 +10,6 @@
   value: 100
 
 - type: replace
-  path: /instance_groups/name=nozzle/instances
-  value: 7
-
-- type: replace
   path: /instance_groups/name=api/instances
   value: 10
 
@@ -19,10 +17,33 @@
   path: /instance_groups/name=cc-worker/instances
   value: 5
 
+# scaling loggregator components per https://docs.cloudfoundry.org/loggregator/log-ops-guide.html#scaling
+- type: replace
+  path: /instance_groups/name=doppler/vm_type
+  value: n1-highmem-2
+
+- type: replace
+  path: /instance_groups/name=doppler/instances
+  value: 8
+
+- type: replace
+  path: /instance_groups/name=log-api/vm_type
+  value: medium
+
+- type: replace
+  path: /instance_groups/name=log-api/instances
+  value: 8
+
+- type: replace
+  path: /instance_groups/name=nozzle/instances
+  value: 8
+
+# istio-control
 - type: replace
   path: /instance_groups/name=istio-control/vm_type
   value: n1-highcpu-8
 
+# makes vms deploy faster
 - type: replace
   path: /update/max_in_flight
   value: 12
