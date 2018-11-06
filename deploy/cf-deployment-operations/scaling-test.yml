@@ -17,7 +17,8 @@
   path: /instance_groups/name=cc-worker/instances
   value: 5
 
-# scaling loggregator components per https://docs.cloudfoundry.org/loggregator/log-ops-guide.html#scaling
+# scaling loggregator components per
+# https://docs.cloudfoundry.org/loggregator/log-ops-guide.html#scaling
 - type: replace
   path: /instance_groups/name=doppler/vm_type
   value: n1-highmem-2
@@ -47,3 +48,8 @@
 - type: replace
   path: /update/max_in_flight
   value: 12
+
+# similar vm type as prod
+- type: replace
+  path: /instance_groups/name=database/vm_type
+  value: n1-highcpu-16
