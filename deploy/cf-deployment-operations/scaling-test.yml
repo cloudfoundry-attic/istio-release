@@ -33,11 +33,11 @@
 
 - type: replace
   path: /instance_groups/name=log-api/instances
-  value: 8
+  value: 12
 
 - type: replace
   path: /instance_groups/name=nozzle/instances
-  value: 8
+  value: 12
 
 - type: replace
   path: /instance_groups/name=nozzle/vm_type
