@@ -16,11 +16,6 @@ packages:
 - golang-1-linux
 
 provides:
-- name: pilot_to_copilot_conn
-  type: pilot_to_copilot_conn
-  properties:
-  - listen_port_for_pilot
-
 - name: cloud_controller_to_copilot_conn
   type: cloud_controller_to_copilot_conn
   properties:
@@ -32,10 +27,6 @@ provides:
   - listen_port_for_mcp
 
 properties:
-  listen_port_for_pilot:
-    description: "The port that Pilot platform adapter will connect to, to retrieve route info"
-    default: 9000
-
   listen_port_for_mcp:
     description: "The port that Pilot MCP client will connect to, to retrieve route info"
     default: 9009
