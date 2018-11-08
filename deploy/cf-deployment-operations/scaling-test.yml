@@ -25,7 +25,7 @@
 
 - type: replace
   path: /instance_groups/name=doppler/instances
-  value: 10
+  value: 14
 
 - type: replace
   path: /instance_groups/name=log-api/vm_type
