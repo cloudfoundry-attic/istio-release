@@ -141,7 +141,7 @@
     name: pilot-discovery
     release: istio
     provides:
-      pilot: { as: diego-cell-pilot }
+      pilot: nil
     properties:
       copilot:
         server_ca_cert: "((copilot.ca))"
