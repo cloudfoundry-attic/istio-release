@@ -1,3 +1,20 @@
+<%
+  require 'json'
+
+  def create_keypairs(keypairs)
+    keypairs = []
+    if_p("frontend_tls_keypairs").each { |cert_pair|
+      pair = {
+        "CertChain" => cert_pair.cert_chain,
+        "PrivateKey" => cert_pair.private_key
+      }
+
+      keypairs << pair
+    }
+
+    keypairs.to_json
+  end
+%>
 {
   "ListenAddressForCloudController": "0.0.0.0:<%= p('listen_port_for_cloud_controller') %>",
   "ListenAddressForMCP": "0.0.0.0:<%= p('listen_port_for_mcp') %>",
@@ -14,5 +31,6 @@
     "ClientSessionCacheSize": <%= p('bbs.client_session_cache_size') %>,
     "MaxIdleConnsPerHost": <%= p('bbs.max_idle_conns_per_host') %>,
     "SyncInterval": "<%= p('bbs.sync_interval') %>"
-  }
+  },
+  "TLSPems": <%= if_p("frontend_tls_keypairs") { |keypairs| create_keypairs(keypairs) } %>
 }

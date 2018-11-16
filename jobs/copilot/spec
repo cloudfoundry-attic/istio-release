@@ -67,3 +67,6 @@ properties:
   bbs.max_idle_conns_per_host:
     description: "Maximum number of idle http connections"
     default: 0
+
+  frontend_tls_keypairs:
+    description: "Array of private keys and certificates used for TLS handshakes with downstream clients. Each element in the array is an object containing fields 'private_key' and 'cert_chain', each of which supports a PEM block. "
