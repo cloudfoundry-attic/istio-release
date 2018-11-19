@@ -20,7 +20,35 @@ config = {
     }
   },
   "static_resources": {
-    "listeners": [],
+    "listeners": [
+      {
+        "address": {
+          "socket_address": {
+            "address": "0.0.0.0",
+            "port_value": 8002
+          }
+        },
+        "filter_chains": [
+          {
+            "filters": [
+              "name": "envoy.http_connection_manager",
+              "config": {
+                "stat_prefix": "stat",
+                "route_config": {},
+                "http_filters": [
+                  {
+                    "name": "envoy.health_check",
+                    "config": {
+                      "pass_through_mode": false
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "clusters": [
       {
         "name": "pilot-sd",
