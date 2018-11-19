@@ -31,5 +31,5 @@ bosh deploy cf.yml -o deploy/cf-deployment-operations/add-istio.yml
 
 ```
 ./scripts/update # to sync all the submodules
-./test
+./test-linux.sh or ./test-mac.sh
 ```

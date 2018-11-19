@@ -2,17 +2,25 @@
   require 'json'
 
   def create_keypairs(keypairs)
-    keypairs = []
-    if_p("frontend_tls_keypairs").each { |cert_pair|
+    if !keypairs.is_a?(Array)
+      raise 'frontend_tls_keypairs should be an array'
+    end
+
+    pairs = []
+
+    keypairs.each do |cert_pair|
+      if !cert_pair.is_a?(Hash) || !cert_pair.key?("cert_chain") || !cert_pair.key?("private_key")
+        raise 'must provide cert_chain and private_key with frontend_tls_keypairs'
+      end
       pair = {
-        "CertChain" => cert_pair.cert_chain,
-        "PrivateKey" => cert_pair.private_key
+        "CertChain" => cert_pair['cert_chain'],
+        "PrivateKey" => cert_pair['private_key']
       }
 
-      keypairs << pair
-    }
+      pairs << pair
+    end
 
-    keypairs.to_json
+    pairs.to_json
   end
 %>
 {
@@ -32,5 +40,5 @@
     "MaxIdleConnsPerHost": <%= p('bbs.max_idle_conns_per_host') %>,
     "SyncInterval": "<%= p('bbs.sync_interval') %>"
   },
-  "TLSPems": <%= if_p("frontend_tls_keypairs") { |keypairs| create_keypairs(keypairs) } %>
+  "TLSPems": <%= create_keypairs(p('frontend_tls_keypairs')) %>
 }
