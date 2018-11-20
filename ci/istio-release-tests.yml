@@ -1,0 +1,26 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: { repository: cloudfoundry/cf-routing-pipeline }
+
+inputs:
+- name: istio-release
+
+run:
+  path: /bin/bash
+  args:
+    - -exc
+    - |
+      bundle install
+      bundle exec rspec
+      export GOPATH=${PWD}/go
+      export PATH=$PATH:$GOPATH/bin
+      cd src/code.cloudfoundry.org/copilot
+      dep ensure
+      go install ./vendor/github.com/onsi/ginkgo/ginkgo
+      ginkgo -r -p --randomizeAllSpecs --randomizeSuites --failOnPending --trace --race --progress
+      go install ./cmd/copilot-server
+      cd sdk/ruby
+      bundle exec rspec
