@@ -29,7 +29,20 @@ bosh deploy cf.yml -o deploy/cf-deployment-operations/add-istio.yml
 
 ## Running Tests
 
+### Run release tests
+Test your changes to istio-release. This script tests changes in copilot and in
+the BOSH release.
+
 ```
 ./scripts/update # to sync all the submodules
-./test-linux.sh or ./test-mac.sh
+./test-release-linux.sh or ./test-release-mac.sh
+```
+
+### Run upstream tests
+Test your integration with upstream Istio. This runs the Pilot-related tests within
+istio.io/istio.
+
+```
+./scripts/update # to sync all the submodules
+./test-upstream-linux.sh or ./test-upstream-mac.sh
 ```
