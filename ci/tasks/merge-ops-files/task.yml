@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+  - name: cf-deployment
+  - name: istio-release
+  - name: source1
+    optional: true
+
+outputs:
+  - name: merged-operations
+
+params:
+  SOURCE1_DIR: ~
+
+run:
+  path: istio-release/ci/tasks/merge-ops-files/task

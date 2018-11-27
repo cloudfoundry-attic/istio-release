@@ -1,0 +1,8 @@
+- type: replace
+  path: /vm_extensions/-
+  value:
+    name: cf-istio-router-network-properties
+    cloud_properties:
+      target_pool: ((istio_router_target_pool))
+      tags:
+      - ((istio_router_target_pool))

@@ -1,0 +1,5 @@
+- type: replace
+  path: /releases/name=cf-mysql
+  value:
+    name: cf-mysql
+    version: latest

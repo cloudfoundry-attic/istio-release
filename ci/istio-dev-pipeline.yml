@@ -1,0 +1,383 @@
+groups:
+- name: istio
+  jobs:
+  - copilot-test
+  - istio-release-test
+  - istio-dev-deploy-cf
+  - run-iats-dev
+  - run-scaling
+  - run-sits
+  - merge-to-master
+- name: maintenance
+  jobs:
+  - istio-dev-bbl-up
+  - isitio-dev-bbl-destroy
+  - istio-dev-bosh-cleanup
+
+resources:
+- name: cf-deployment-concourse-tasks
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks
+    tag_filter: v*
+
+- name: cf-deployment
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+
+- name: deployments-repo
+  type: git
+  source:
+    branch: master
+    private_key: ((deployment_repo_private_key))
+    uri: ((deployment_repo_uri))
+
+- name: copilot
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/copilot
+
+- name: istio-release
+  type: git
+  source:
+    branch: ((istio_release_branch))
+    uri: https://github.com/cloudfoundry/istio-release.git
+
+- name: istio-release-master-write
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/istio-release.git
+    private_key: ((istio_release_private_key))
+
+- name: istio-acceptance-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/istio-acceptance-tests.git
+
+- name: istio-scaling
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/istio-scaling.git
+
+- name: sync-integration-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/sync-integration-tests.git
+
+- name: routing-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/routing-ci.git
+
+- name: capi-develop
+  type: git
+  source:
+    branch: ci-passed
+    uri: https://github.com/cloudfoundry/capi-release
+
+- name: latest-silk
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/silk-release
+    branch: release-candidate
+    ignore_paths:
+      - docs
+
+- name: latest-cf-mysql
+  type: git
+  source:
+    uri: https://github.com/cf-routing/cf-mysql-release
+    branch: temporary-fix
+    ignore_paths:
+      - docs
+
+#TIMERS
+- name: nightly
+  type: time
+  source:
+    start: 1:00 AM
+    stop: 2:00 AM
+    location: America/Los_Angeles
+
+jobs:
+- name: copilot-test
+  plan:
+  - get: copilot
+    trigger: true
+  - task: test
+    file: copilot/ci/test.yml
+
+- name: istio-dev-bbl-up
+  serial_groups:
+  - istio-dev
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-repo
+    - get: routing-ci
+    - get: istio-release
+  - task: merge-bbl-config
+    file: istio-release/ci/tasks/merge-bbl-config/task.yml
+    input_mapping:
+      source1: istio-release
+    params:
+      SOURCE1_DIR: ci/planpatches
+  - task: bbl-up
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    input_mapping:
+      bbl-state: deployments-repo
+      bbl-config: merged-bbl-config
+    params:
+      DEBUG_MODE: true
+      BBL_IAAS: gcp
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((gcp_service_account_key))
+      BBL_GCP_REGION: ((bbl_gcp_region))
+      BBL_LB_CERT: ((lb_cert))
+      BBL_LB_KEY: ((lb_key))
+      LB_DOMAIN: ((lb_domain))
+      BBL_STATE_DIR: ((bbl_state_dir))
+      BBL_ENV_NAME: istio-dev
+      BBL_CONFIG_DIR: .
+    ensure:
+      put: deployments-repo
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: isitio-dev-bbl-destroy
+  serial_groups: [istio-dev]
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: deployments-repo
+    - get: cf-deployment-concourse-tasks
+  - task: destroy-istio-dev
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_STATE_DIR: ((bbl_state_dir))
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((gcp_service_account_key))
+      GIT_COMMIT_EMAIL: ((committer_email))
+    input_mapping:
+      bbl-state: deployments-repo
+    ensure:
+      put: deployments-repo
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: istio-dev-bosh-cleanup
+  serial_groups: [istio-dev]
+  build_logs_to_retain: 100
+  plan:
+  - get: nightly
+    trigger: true
+  - get: deployments-repo
+  - get: cf-deployment-concourse-tasks
+  - task: cleanup-artifacts
+    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+    params:
+      BBL_STATE_DIR: ((bbl_state_dir))
+    input_mapping:
+      bbl-state: deployments-repo
+
+- name: istio-release-test
+  plan:
+  - aggregate:
+    - get: istio-release
+      trigger: true
+  - task: test
+    privileged: true
+    file: istio-release/ci/istio-release-tests.yml
+
+- name: istio-dev-deploy-cf
+  serial_groups:
+  - istio-dev
+  plan:
+  - aggregate:
+    - get: istio-release
+      passed: [ istio-release-test ]
+      trigger: true
+    - get: routing-ci
+    - get: latest-silk
+      trigger: true
+    - get: latest-cf-mysql
+    - get: cf-deployment-concourse-tasks
+    - get: capi-develop
+    - get: cf-deployment
+      trigger: true
+    - get: deployments-repo
+  - task: merge-ops-files
+    file: istio-release/ci/tasks/merge-ops-files/task.yml
+  - aggregate:
+    - task: upload-stemcell
+      file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+      input_mapping:
+        bbl-state: deployments-repo
+      params:
+        BBL_STATE_DIR: ((bbl_state_dir))
+    - task: upload-capi-release-with-copilot
+      file: istio-release/ci/tasks/upload-local-release/task.yml
+      params:
+        BBL_STATE_DIR: ((bbl_state_dir))
+      input_mapping:
+        bbl-state: deployments-repo
+        local-release: capi-develop
+    - task: upload-latest-silk-release
+      file: istio-release/ci/tasks/upload-local-release/task.yml
+      params:
+        BBL_STATE_DIR: ((bbl_state_dir))
+      input_mapping:
+        bbl-state: deployments-repo
+        local-release: latest-silk
+    - task: upload-latest-cf-mysql-release
+      file: istio-release/ci/tasks/upload-local-release/task.yml
+      params:
+        BBL_STATE_DIR: ((bbl_state_dir))
+      input_mapping:
+        bbl-state: deployments-repo
+        local-release: latest-cf-mysql
+  - task: deploy-cf-with-created-istio-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    params:
+      BBL_STATE_DIR: ((bbl_state_dir))
+      OPS_FILES: |
+        use-compiled-releases.yml
+        enable-service-discovery.yml
+        enable-routing-integrity.yml
+        use-latest-capi-release.yml
+        use-latest-silk-release.yml
+        use-latest-mysql-release.yml
+        add-istio.yml
+        scale-diego-for-ci.yml
+        add-external-istio-lb.yml
+        add-route-syncer.yml
+      SYSTEM_DOMAIN: ((lb_domain))
+    input_mapping:
+      bbl-state: deployments-repo
+      vars-store: deployments-repo
+      vars-files: deployments-repo
+      ops-files: merged-operations
+      release: istio-release
+
+- name: run-iats-dev
+  serial_groups:
+  - istio-dev
+  plan:
+  - aggregate:
+    - get: istio-release
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: latest-silk
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: deployments-repo
+    - get: istio-acceptance-tests
+  - task: run-iats
+    file: istio-release/ci/tasks/run-iats/task.yml
+    params:
+      VARS_LOCATION: deployments-repo/((bbl_state_dir))
+      CF_LOGIN_DOMAIN: ((lb_domain))
+      API_DOMAIN: istio.((lb_domain))
+
+- name: run-scaling
+  serial_groups:
+  - istio-dev
+  plan:
+  - aggregate:
+    - get: istio-release
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: deployments-repo
+    - get: istio-scaling
+  - task: run-scaling
+    file: istio-release/ci/tasks/run-istio-scaling/task.yml
+    params:
+      VARS_LOCATION: deployments-repo/((bbl_state_dir))
+      SYSTEM_DOMAIN: ((lb_domain))
+      NUMBER_OF_APPS: 500
+      CLEANUP_ORG: true
+      DEPLOYMENT_NAME: cf
+
+- name: run-sits
+  serial_groups:
+  - istio-dev
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: istio-release
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: capi-develop
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: latest-silk
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: deployments-repo
+    - get: sync-integration-tests
+      trigger: true
+  - task: run
+    input_mapping:
+      bbl-state: deployments-repo
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      inputs:
+      - name: sync-integration-tests
+      - name: deployments-repo
+      - name: bbl-state
+      - name: cf-deployment-concourse-tasks
+      params:
+        BBL_STATE_DIR: ((bbl_state_dir))
+        CF_SYSTEM_DOMAIN: ((lb_domain))
+        CF_APPS_DOMAIN: istio.((lb_domain))
+        RUN_ROUTING_TESTS: true
+      run:
+        path: bash
+        args:
+          - -exc
+          - |
+            source cf-deployment-concourse-tasks/shared-functions
+            setup_bosh_env_vars
+            mkdir -p "${GOPATH}/src/code.cloudfoundry.org"
+            cp -R "${PWD}/sync-integration-tests" "${GOPATH}/src/code.cloudfoundry.org"
+            cd bbl-state
+            "${GOPATH}/src/code.cloudfoundry.org/sync-integration-tests/run-against-env.sh"
+
+- name: merge-to-master
+  plan:
+    - aggregate:
+      - get: istio-release-master-write
+      - get: istio-release
+        passed:
+        - run-sits
+        - run-scaling
+        - run-iats-dev
+    - task: merge-branch-to-master
+      file: istio-release/ci/tasks/merge-branch-to-master/task.yml
+      params:
+        GIT_COMMIT_EMAIL: ((committer_email))
+        RELEASE_BRANCH: ((istio_release_branch))
+      input_mapping:
+        master-dir: istio-release-master-write
+    - put: istio-release-master-write
+      params:
+        repository: merged-branch
