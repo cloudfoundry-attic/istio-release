@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/cf-routing-pipeline
+
+inputs:
+- name: istio-release
+
+outputs:
+- name: certs
+
+params:
+  DOMAIN:
+
+run:
+  path: istio-release/ci/tasks/make-certs/task

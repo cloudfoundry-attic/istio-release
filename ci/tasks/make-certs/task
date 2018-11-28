@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e -x -u -o pipefail
+
+outdir=./certs
+
+gimme_certs() {
+    local common_name;
+    common_name="${1:-fake}";
+    local ca_common_name;
+    ca_common_name="${2:-${common_name}_ca}";
+    local depot_path;
+    depot_path="${3:-fake_cert_stuff}";
+    certstrap --depot-path "${depot_path}" init --common-name "${ca_common_name}" --passphrase ""
+    certstrap --depot-path "${depot_path}" request-cert --common-name "${common_name}" --passphrase ""
+    certstrap --depot-path "${depot_path}" sign --CA "${ca_common_name}" --passphrase "" "${common_name}"
+}
+
+if ! [[ -a "${outdir}/key.pem" ]]; then
+  gimme_certs "${DOMAIN}" fakeCA /tmp
+  cp "/tmp/${DOMAIN}.key" "${outdir}/key.pem"
+  cp "/tmp/${DOMAIN}.crt" "${outdir}/cert.pem"
+fi
