@@ -14,7 +14,7 @@ inputs:
   - name: local-release
 
 run:
-  path: istio-release/ci/tasks/upload-local-release
+  path: istio-release/ci/tasks/upload-local-release/task
 
 params:
   BBL_STATE_DIR:
