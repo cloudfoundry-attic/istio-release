@@ -20,12 +20,12 @@ resource_types:
     repository: czero/staticfile-resource
 
 resources:
-- name: dns-tfvars
+- name: tfvars
   type: staticfile
   source:
     files:
-    - filename: dns.tfvars
-      data: {{parent_zone_tfvars_data}}
+    - filename: vars.tfvars
+      data: {{tfvars_data}}
 
 - name: cf-deployment-concourse-tasks
   type: git
@@ -131,13 +131,13 @@ jobs:
     - get: deployments-repo
     - get: routing-ci
     - get: istio-release
-    - get: dns-tfvars
+    - get: tfvars
   - task: merge-bbl-config
     file: istio-release/ci/tasks/merge-bbl-config/task.yml
     input_mapping:
       source1: istio-release
       source2: istio-release
-      source3: dns-tfvars
+      source3: tfvars
     params:
       SOURCE1_DIR: ci/planpatches/add-parent-dns-full
       SOURCE2_DIR: deploy/bbl-config
@@ -173,8 +173,8 @@ jobs:
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
     params:
       BBL_STATE_DIR: {{bbl_state_dir}}
-      BBL_GCP_SERVICE_ACCOUNT_KEY: shared-gcp-account-creds.json
-      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      BBL_GCP_SERVICE_ACCOUNT_KEY: {{gcp_service_account_key}}
+      GIT_COMMIT_EMAIL: {{committer_email}}
     input_mapping:
       bbl-state: deployments-repo
     ensure:
@@ -286,7 +286,6 @@ jobs:
       trigger: true
       passed:
       - istio-dev-deploy-cf
-    - get: routing-ci
     - get: latest-silk
       trigger: true
       passed:
@@ -294,11 +293,11 @@ jobs:
     - get: deployments-repo
     - get: istio-acceptance-tests
   - task: run-iats
-    file: routing-ci/run-iats/task.yml
+    file: istio-release/run-iats/task.yml
     params:
-      VARS_LOCATION: deployments-repo/istio-dev/bbl-state
-      CF_LOGIN_DOMAIN: istio-dev.routing.cf-app.com
-      API_DOMAIN: istio.istio-dev.routing.cf-app.com
+      VARS_LOCATION: deployments-repo/{{bbl_state_dir}}
+      CF_LOGIN_DOMAIN: {{lb_domain}}
+      API_DOMAIN: istio.{{lb_domain}}
 
 - name: run-scaling
   serial_groups:
@@ -309,14 +308,13 @@ jobs:
       trigger: true
       passed:
       - istio-dev-deploy-cf
-    - get: routing-ci
     - get: deployments-repo
     - get: istio-scaling
   - task: run-scaling
-    file: routing-ci/run-istio-scaling/task.yml
+    file: istio-release/ci/tasks/run-istio-scaling/task.yml
     params:
-      VARS_LOCATION: deployments-repo/istio-dev/bbl-state
-      SYSTEM_DOMAIN: istio-dev.routing.cf-app.com
+      VARS_LOCATION: deployments-repo/{{bbl_state_dir}}
+      SYSTEM_DOMAIN: {{lb_domain}}
       NUMBER_OF_APPS: 500
       CLEANUP_ORG: true
       DEPLOYMENT_NAME: cf
@@ -326,7 +324,7 @@ jobs:
   - istio-dev
   plan:
   - aggregate:
-    - get: routing-ci
+    - get: cf-deployment-concourse-tasks
     - get: istio-release
       trigger: true
       passed:
@@ -343,6 +341,8 @@ jobs:
     - get: sync-integration-tests
       trigger: true
   - task: run
+    input_mapping:
+      bbl-state: deployments-repo
     config:
       platform: linux
       image_resource:
@@ -352,22 +352,19 @@ jobs:
       inputs:
       - name: sync-integration-tests
       - name: deployments-repo
-      - name: routing-ci
+      - name: bbl-state
       params:
-        BBL_STATE_DIR: deployments-repo/istio-dev/bbl-state
-        CF_SYSTEM_DOMAIN: istio-dev.routing.cf-app.com
-        CF_APPS_DOMAIN: istio.istio-dev.routing.cf-app.com
+        BBL_STATE_DIR: {{bbl_state_dir}}
+        CF_SYSTEM_DOMAIN: {{lb_domain}}
+        CF_APPS_DOMAIN: istio.{{lb_domain}}
         RUN_ROUTING_TESTS: true
       run:
         path: bash
         args:
           - -exc
           - |
-            source "${PWD}/routing-ci/scripts/script_helpers.sh"
-            pushd "${PWD}/deployments-repo/istio-dev"
-            ENV=$(basename "$PWD")
-            bosh_login $ENV
-            popd
+            source cf-deployment-concourse-tasks/shared-functions
+            setup_bosh_env_vars
             mkdir -p "${GOPATH}/src/code.cloudfoundry.org"
             cp -R "${PWD}/sync-integration-tests" "${GOPATH}/src/code.cloudfoundry.org"
             "${GOPATH}/src/code.cloudfoundry.org/sync-integration-tests/run-against-env.sh"
