@@ -142,6 +142,10 @@ jobs:
       SOURCE1_DIR: ci/planpatches/add-parent-dns-full
       SOURCE2_DIR: deploy/bbl-config
       SOURCE3_DIR: ""
+  - task: make-certs
+    file: istio-release/ci/tasks/make-certs/task.yml
+    params:
+      DOMAIN: {{lb_domain}}
   - task: bbl-up
     file: cf-deployment-concourse-tasks/bbl-up/task.yml
     input_mapping:
@@ -151,8 +155,8 @@ jobs:
       BBL_IAAS: gcp
       BBL_GCP_SERVICE_ACCOUNT_KEY: {{gcp_service_account_key}}
       BBL_GCP_REGION: {{bbl_gcp_region}}
-      BBL_LB_CERT: {{lb_cert}}
-      BBL_LB_KEY: {{lb_key}}
+      BBL_LB_CERT: certs/cert.pem
+      BBL_LB_KEY: certs/key.pem
       LB_DOMAIN: {{lb_domain}}
       BBL_STATE_DIR: {{bbl_state_dir}}
       BBL_ENV_NAME: istio-dev
