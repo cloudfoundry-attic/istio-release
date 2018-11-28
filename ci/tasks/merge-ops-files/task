@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e -x -u -o pipefail
+
+cp -R cf-deployment/operations/* merged-operations/
+cp -R istio-release/deploy/cf-deployment-operations/* merged-operations/
+
+ls merged-operations
+
+if [ -d source1 ]; then
+  cp -R source1/${SOURCE1_DIR:-""}/* merged-operations/
+fi
