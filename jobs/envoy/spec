@@ -1,12 +1,18 @@
 ---
 name: envoy
 templates:
+  bpm-pre-start.erb: bin/bpm-pre-start
   bpm.yml.erb: config/bpm.yml
   envoy.json.erb: config/envoy.json
+  librarian.json.erb: config/librarian.json
 
 packages:
   - envoy
+  - librarian
 
 consumes:
 - name: pilot
   type: pilot
+- name: frontend_tls_keypairs
+  type: frontend_tls_keypairs
+  optional: true

@@ -26,6 +26,11 @@ provides:
   properties:
   - listen_port_for_mcp
 
+- name: frontend_tls_keypairs
+  type: frontend_tls_keypairs
+  properties:
+  - frontend_tls_keypairs
+
 properties:
   listen_port_for_mcp:
     description: "The port that Pilot MCP client will connect to, to retrieve route info"

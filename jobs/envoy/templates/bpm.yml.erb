@@ -10,3 +10,5 @@ processes:
   - --v2-config-only
   capabilities:
   - NET_BIND_SERVICE
+  hooks:
+    pre_start: /var/vcap/jobs/envoy/bin/bpm-pre-start

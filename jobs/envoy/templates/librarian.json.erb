@@ -1,0 +1,28 @@
+<%
+  require 'json'
+
+  def create_keypairs(keypairs)
+    if !keypairs.is_a?(Array)
+      raise "frontend_tls_keypairs should be an array: #{keypairs}"
+    end
+
+    pairs = []
+
+    keypairs.each do |cert_pair|
+      if !cert_pair.is_a?(Hash) || !cert_pair.key?("cert_chain") || !cert_pair.key?("private_key")
+        raise 'must provide cert_chain and private_key with frontend_tls_keypairs'
+      end
+      pair = {
+        "CertChain" => cert_pair['cert_chain'],
+        "PrivateKey" => cert_pair['private_key']
+      }
+
+      pairs << pair
+    end
+
+    pairs.to_json
+  end
+%>
+{
+  "TLSPems": <%= create_keypairs(link('frontend_tls_keypairs').p('frontend_tls_keypairs')) %>
+}
