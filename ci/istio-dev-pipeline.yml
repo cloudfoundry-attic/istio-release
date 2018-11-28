@@ -225,12 +225,7 @@ jobs:
       trigger: true
     - get: deployments-repo
   - task: merge-ops-files
-    file: routing-ci/merge-ops-files/task.yml
-    input_mapping:
-      source1: istio-release
-    params:
-      ENVIRONMENT: istio-dev
-      SOURCE1_DIR: deploy/cf-deployment-operations
+    file: istio-release/ci/tasks/merge-ops-files/task.yml
   - aggregate:
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
@@ -238,50 +233,31 @@ jobs:
         bbl-state: deployments-repo
       params:
         BBL_STATE_DIR: {{bbl_state_dir}}
-    - task: create-capi-release-with-copilot
-      file: routing-ci/create-release-tarball/task.yml
-      input_mapping:
-        release-dir: capi-develop
-      output_mapping:
-        release-tarball: capi-tarball
-    - task: create-latest-silk-release
-      file: routing-ci/create-release-tarball/task.yml
-      input_mapping:
-        release-dir: latest-silk
-      output_mapping:
-        release-tarball: silk-tarball
-    - task: create-latest-cf-mysql-release
-      file: routing-ci/create-release-tarball/task.yml
-      input_mapping:
-        release-dir: latest-cf-mysql
-      output_mapping:
-        release-tarball: mysql-tarball
-  - aggregate:
     - task: upload-capi-release-with-copilot
-      file: routing-ci/bosh2-command/task-with-release.yml
+      file: istio-release/ci/tasks/upload-local-release/task.yml
       params:
-        ENVIRONMENT: istio-dev
-        COMMAND: "upload-release ./release/*.tgz"
+        BBL_STATE_DIR: {{bbl_state_dir}}
       input_mapping:
-        release: capi-tarball
+        bbl-state: deployments-repo
+        local-release: capi-develop
     - task: upload-latest-silk-release
-      file: routing-ci/bosh2-command/task-with-release.yml
+      file: istio-release/ci/tasks/upload-local-release/task.yml
       params:
-        ENVIRONMENT: istio-dev
-        COMMAND: "upload-release ./release/*.tgz"
+        BBL_STATE_DIR: {{bbl_state_dir}}
       input_mapping:
-        release: silk-tarball
+        bbl-state: deployments-repo
+        local-release: latest-silk
     - task: upload-latest-cf-mysql-release
-      file: routing-ci/bosh2-command/task-with-release.yml
+      file: istio-release/ci/tasks/upload-local-release/task.yml
       params:
-        ENVIRONMENT: istio-dev
-        COMMAND: "upload-release ./release/*.tgz"
+        BBL_STATE_DIR: {{bbl_state_dir}}
       input_mapping:
-        release: mysql-tarball
+        bbl-state: deployments-repo
+        local-release: latest-cf-mysql
   - task: deploy-cf-with-created-istio-release
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     params:
-      BBL_STATE_DIR: istio-dev/bbl-state
+      BBL_STATE_DIR: {{bbl_state_dir}}
       OPS_FILES: |
         use-compiled-releases.yml
         enable-service-discovery.yml
@@ -293,7 +269,7 @@ jobs:
         scale-diego-for-ci.yml
         add-external-istio-lb.yml
         add-route-syncer.yml
-      SYSTEM_DOMAIN: istio-dev.routing.cf-app.com
+      SYSTEM_DOMAIN: {{lb_domain}}
     input_mapping:
       bbl-state: deployments-repo
       vars-store: deployments-repo
