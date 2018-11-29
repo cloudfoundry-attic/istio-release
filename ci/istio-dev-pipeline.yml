@@ -56,7 +56,7 @@ resources:
 - name: istio-release
   type: git
   source:
-    branch: c2c_pipeline
+    branch: {{istio_release_branch}}
     uri: https://github.com/cloudfoundry/istio-release.git
 
 - name: istio-acceptance-tests
@@ -152,6 +152,7 @@ jobs:
       bbl-state: deployments-repo
       bbl-config: merged-bbl-config
     params:
+      DEBUG_MODE: true
       BBL_IAAS: gcp
       BBL_GCP_SERVICE_ACCOUNT_KEY: {{gcp_service_account_key}}
       BBL_GCP_REGION: {{bbl_gcp_region}}
