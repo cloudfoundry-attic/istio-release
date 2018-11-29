@@ -9,6 +9,7 @@ image_resource:
 inputs:
   - name: istio-release
   - name: istio-acceptance-tests
+  - name: deployments-repo
 
 run:
   path: istio-release/ci/tasks/run-iats/task
