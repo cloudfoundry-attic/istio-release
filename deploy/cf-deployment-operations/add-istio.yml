@@ -124,6 +124,8 @@
     client_ca_file: ((service_cf_internal_ca.certificate))
     client_key_file: ((copilot_client.private_key))
     client_chain_file: ((copilot_client.certificate))
+    temporary_istio_domains:
+    - "istio.((system_domain))"
 - type: replace
   path: /variables/-
   value:
