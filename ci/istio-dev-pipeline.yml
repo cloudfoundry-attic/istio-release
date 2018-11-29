@@ -299,7 +299,7 @@ jobs:
     - get: deployments-repo
     - get: istio-acceptance-tests
   - task: run-iats
-    file: istio-release/run-iats/task.yml
+    file: istio-release/ci/tasks/run-iats/task.yml
     params:
       VARS_LOCATION: deployments-repo/{{bbl_state_dir}}
       CF_LOGIN_DOMAIN: {{lb_domain}}

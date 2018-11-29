@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
   - name: istio-release
-  - name: deployments-routing
   - name: istio-acceptance-tests
 
 run:
