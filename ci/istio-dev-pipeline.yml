@@ -132,20 +132,20 @@ jobs:
     - get: routing-ci
     - get: istio-release
     - get: tfvars
-  - task: merge-bbl-config
-    file: istio-release/ci/tasks/merge-bbl-config/task.yml
-    input_mapping:
-      source1: istio-release
-      source2: istio-release
-      source3: tfvars
-    params:
-      SOURCE1_DIR: ci/planpatches/add-parent-dns-full
-      SOURCE2_DIR: deploy/bbl-config
-      SOURCE3_DIR: ""
   - task: make-certs
     file: istio-release/ci/tasks/make-certs/task.yml
     params:
       DOMAIN: {{lb_domain}}
+  - task: merge-bbl-config
+    file: istio-release/ci/tasks/merge-bbl-config/task.yml
+    input_mapping:
+      source1: istio-release
+      source2: certs
+      source3: tfvars
+    params:
+      SOURCE1_DIR: ci/planpatches
+      SOURCE2_DIR: .
+      SOURCE3_DIR: ""
   - task: bbl-up
     file: cf-deployment-concourse-tasks/bbl-up/task.yml
     input_mapping:
@@ -155,11 +155,12 @@ jobs:
       BBL_IAAS: gcp
       BBL_GCP_SERVICE_ACCOUNT_KEY: {{gcp_service_account_key}}
       BBL_GCP_REGION: {{bbl_gcp_region}}
-      BBL_LB_CERT: certs/cert.pem
-      BBL_LB_KEY: certs/key.pem
+      BBL_LB_CERT: ../../../bbl-config/cert.pem
+      BBL_LB_KEY: ../../../bbl-config/key.pem
       LB_DOMAIN: {{lb_domain}}
       BBL_STATE_DIR: {{bbl_state_dir}}
       BBL_ENV_NAME: istio-dev
+      BBL_CONFIG_DIR: .
     ensure:
       put: deployments-repo
       params:
