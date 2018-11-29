@@ -22,3 +22,14 @@
     name: istio.apps.internal
     internal: true
 
+- type: replace
+  path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/copilot?
+  value:
+    enabled: true
+    host: copilot.service.cf.internal
+    port: 9001
+    client_ca_file: ((service_cf_internal_ca.certificate))
+    client_key_file: ((copilot_client.private_key))
+    client_chain_file: ((copilot_client.certificate))
+    temporary_istio_domains:
+    - istio.apps.internal
