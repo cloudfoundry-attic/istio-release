@@ -5,4 +5,7 @@ set -e
 /var/vcap/packages/librarian/bin/librarian --config /var/vcap/jobs/envoy/config/librarian.json
 
 # the /etc/istio directory is created by librarian and the envoy job (run as vcap) needs to be able to read certs there
-chown -R vcap:vcap /etc/istio
+
+<% if link('frontend_tls_keypairs').p('frontend_tls_keypairs') %>
+  chown -R vcap:vcap /etc/istio
+<% end %>
