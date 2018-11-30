@@ -13,20 +13,7 @@ groups:
   - isitio-dev-bbl-destroy
   - istio-dev-bosh-cleanup
 
-resource_types:
-- name: staticfile
-  type: docker-image
-  source:
-    repository: czero/staticfile-resource
-
 resources:
-- name: tfvars
-  type: staticfile
-  source:
-    files:
-    - filename: vars.tfvars
-      data: {{tfvars_data}}
-
 - name: cf-deployment-concourse-tasks
   type: git
   source:
@@ -44,8 +31,8 @@ resources:
   type: git
   source:
     branch: master
-    private_key: {{deployment_repo_private_key}}
-    uri: {{deployment_repo_uri}}
+    private_key: ((deployment_repo_private_key))
+    uri: ((deployment_repo_uri))
 
 - name: copilot
   type: git
@@ -56,7 +43,7 @@ resources:
 - name: istio-release
   type: git
   source:
-    branch: {{istio_release_branch}}
+    branch: ((istio_release_branch))
     uri: https://github.com/cloudfoundry/istio-release.git
 
 - name: istio-acceptance-tests
@@ -113,7 +100,6 @@ resources:
     stop: 2:00 AM
     location: America/Los_Angeles
 
-
 jobs:
 - name: copilot-test
   plan:
@@ -131,21 +117,12 @@ jobs:
     - get: deployments-repo
     - get: routing-ci
     - get: istio-release
-    - get: tfvars
-  - task: make-certs
-    file: istio-release/ci/tasks/make-certs/task.yml
-    params:
-      DOMAIN: {{lb_domain}}
   - task: merge-bbl-config
     file: istio-release/ci/tasks/merge-bbl-config/task.yml
     input_mapping:
       source1: istio-release
-      source2: certs
-      source3: tfvars
     params:
       SOURCE1_DIR: ci/planpatches
-      SOURCE2_DIR: .
-      SOURCE3_DIR: ""
   - task: bbl-up
     file: cf-deployment-concourse-tasks/bbl-up/task.yml
     input_mapping:
@@ -154,12 +131,12 @@ jobs:
     params:
       DEBUG_MODE: true
       BBL_IAAS: gcp
-      BBL_GCP_SERVICE_ACCOUNT_KEY: {{gcp_service_account_key}}
-      BBL_GCP_REGION: {{bbl_gcp_region}}
-      BBL_LB_CERT: ../../../bbl-config/cert.pem
-      BBL_LB_KEY: ../../../bbl-config/key.pem
-      LB_DOMAIN: {{lb_domain}}
-      BBL_STATE_DIR: {{bbl_state_dir}}
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((gcp_service_account_key))
+      BBL_GCP_REGION: ((bbl_gcp_region))
+      BBL_LB_CERT: ((lb_cert))
+      BBL_LB_KEY: ((lb_key))
+      LB_DOMAIN: ((lb_domain))
+      BBL_STATE_DIR: ((bbl_state_dir))
       BBL_ENV_NAME: istio-dev
       BBL_CONFIG_DIR: .
     ensure:
@@ -178,9 +155,9 @@ jobs:
   - task: destroy-istio-dev
     file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
     params:
-      BBL_STATE_DIR: {{bbl_state_dir}}
-      BBL_GCP_SERVICE_ACCOUNT_KEY: {{gcp_service_account_key}}
-      GIT_COMMIT_EMAIL: {{committer_email}}
+      BBL_STATE_DIR: ((bbl_state_dir))
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((gcp_service_account_key))
+      GIT_COMMIT_EMAIL: ((committer_email))
     input_mapping:
       bbl-state: deployments-repo
     ensure:
@@ -200,7 +177,7 @@ jobs:
   - task: cleanup-artifacts
     file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
     params:
-      BBL_STATE_DIR: {{bbl_state_dir}}
+      BBL_STATE_DIR: ((bbl_state_dir))
     input_mapping:
       bbl-state: deployments-repo
 
@@ -238,32 +215,32 @@ jobs:
       input_mapping:
         bbl-state: deployments-repo
       params:
-        BBL_STATE_DIR: {{bbl_state_dir}}
+        BBL_STATE_DIR: ((bbl_state_dir))
     - task: upload-capi-release-with-copilot
       file: istio-release/ci/tasks/upload-local-release/task.yml
       params:
-        BBL_STATE_DIR: {{bbl_state_dir}}
+        BBL_STATE_DIR: ((bbl_state_dir))
       input_mapping:
         bbl-state: deployments-repo
         local-release: capi-develop
     - task: upload-latest-silk-release
       file: istio-release/ci/tasks/upload-local-release/task.yml
       params:
-        BBL_STATE_DIR: {{bbl_state_dir}}
+        BBL_STATE_DIR: ((bbl_state_dir))
       input_mapping:
         bbl-state: deployments-repo
         local-release: latest-silk
     - task: upload-latest-cf-mysql-release
       file: istio-release/ci/tasks/upload-local-release/task.yml
       params:
-        BBL_STATE_DIR: {{bbl_state_dir}}
+        BBL_STATE_DIR: ((bbl_state_dir))
       input_mapping:
         bbl-state: deployments-repo
         local-release: latest-cf-mysql
   - task: deploy-cf-with-created-istio-release
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     params:
-      BBL_STATE_DIR: {{bbl_state_dir}}
+      BBL_STATE_DIR: ((bbl_state_dir))
       OPS_FILES: |
         use-compiled-releases.yml
         enable-service-discovery.yml
@@ -275,7 +252,7 @@ jobs:
         scale-diego-for-ci.yml
         add-external-istio-lb.yml
         add-route-syncer.yml
-      SYSTEM_DOMAIN: {{lb_domain}}
+      SYSTEM_DOMAIN: ((lb_domain))
     input_mapping:
       bbl-state: deployments-repo
       vars-store: deployments-repo
@@ -301,9 +278,9 @@ jobs:
   - task: run-iats
     file: istio-release/ci/tasks/run-iats/task.yml
     params:
-      VARS_LOCATION: deployments-repo/environments/istio-dev
-      CF_LOGIN_DOMAIN: {{lb_domain}}
-      API_DOMAIN: istio.istio-dev.c2c.cf-app.com
+      VARS_LOCATION: deployments-repo/((bbl_state_dir))
+      CF_LOGIN_DOMAIN: ((lb_domain))
+      API_DOMAIN: istio.((lb_domain))
 
 - name: run-scaling
   serial_groups:
@@ -319,9 +296,8 @@ jobs:
   - task: run-scaling
     file: istio-release/ci/tasks/run-istio-scaling/task.yml
     params:
-      # TODO: parameterize the below
-      VARS_LOCATION: deployments-repo/environments/istio-dev
-      SYSTEM_DOMAIN: {{lb_domain}}
+      VARS_LOCATION: deployments-repo/((bbl_state_dir))
+      SYSTEM_DOMAIN: ((lb_domain))
       NUMBER_OF_APPS: 500
       CLEANUP_ORG: true
       DEPLOYMENT_NAME: cf
@@ -362,10 +338,9 @@ jobs:
       - name: bbl-state
       - name: cf-deployment-concourse-tasks
       params:
-        BBL_STATE_DIR: {{bbl_state_dir}}
-        CF_SYSTEM_DOMAIN: {{lb_domain}}
-        # TODO: turn into a param
-        CF_APPS_DOMAIN: istio.istio-dev.c2c.cf-app.com
+        BBL_STATE_DIR: ((bbl_state_dir))
+        CF_SYSTEM_DOMAIN: ((lb_domain))
+        CF_APPS_DOMAIN: istio.((lb_domain))
         RUN_ROUTING_TESTS: true
       run:
         path: bash
