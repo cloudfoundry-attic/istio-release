@@ -9,6 +9,7 @@ image_resource:
 inputs:
   - name: istio-release
   - name: istio-scaling
+  - name: deployments-repo
 
 run:
   path: istio-release/ci/tasks/run-istio-scaling/task
