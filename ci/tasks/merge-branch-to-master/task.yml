@@ -1,0 +1,16 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: pcfseceng/pci
+inputs:
+- name: istio-release
+- name: master-dir
+params:
+  GIT_COMMIT_EMAIL:
+  RELEASE_BRANCH:
+outputs:
+- name: merged-branch
+run:
+  path: istio-release/ci/tasks/merge-branch-to-master/task.sh

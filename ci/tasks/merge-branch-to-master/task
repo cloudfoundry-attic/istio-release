@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+git config --global user.name "CI Bot"
+git config --global user.email "${GIT_COMMIT_EMAIL}"
+
+pushd master-dir
+  git remote add -f local-branch ../istio-release
+  git branch before-merge
+  git merge --no-edit local-branch/${RELEASE_BRANCH}
+  git status
+  git diff before-merge --color | cat
+  cp -a . ../merged-branch-to-master
+popd
