@@ -301,9 +301,9 @@ jobs:
   - task: run-iats
     file: istio-release/ci/tasks/run-iats/task.yml
     params:
-      VARS_LOCATION: deployments-repo/{{bbl_state_dir}}
+      VARS_LOCATION: deployments-repo/environments/istio-dev
       CF_LOGIN_DOMAIN: {{lb_domain}}
-      API_DOMAIN: istio.{{lb_domain}}
+      API_DOMAIN: istio.istio-dev.c2c.cf-app.com
 
 - name: run-scaling
   serial_groups:
@@ -319,7 +319,8 @@ jobs:
   - task: run-scaling
     file: istio-release/ci/tasks/run-istio-scaling/task.yml
     params:
-      VARS_LOCATION: deployments-repo/{{bbl_state_dir}}
+      # TODO: parameterize the below
+      VARS_LOCATION: deployments-repo/environments/istio-dev
       SYSTEM_DOMAIN: {{lb_domain}}
       NUMBER_OF_APPS: 500
       CLEANUP_ORG: true
@@ -359,10 +360,12 @@ jobs:
       - name: sync-integration-tests
       - name: deployments-repo
       - name: bbl-state
+      - name: cf-deployment-concourse-tasks
       params:
         BBL_STATE_DIR: {{bbl_state_dir}}
         CF_SYSTEM_DOMAIN: {{lb_domain}}
-        CF_APPS_DOMAIN: istio.{{lb_domain}}
+        # TODO: turn into a param
+        CF_APPS_DOMAIN: istio.istio-dev.c2c.cf-app.com
         RUN_ROUTING_TESTS: true
       run:
         path: bash
@@ -373,4 +376,5 @@ jobs:
             setup_bosh_env_vars
             mkdir -p "${GOPATH}/src/code.cloudfoundry.org"
             cp -R "${PWD}/sync-integration-tests" "${GOPATH}/src/code.cloudfoundry.org"
+            cd bbl-state
             "${GOPATH}/src/code.cloudfoundry.org/sync-integration-tests/run-against-env.sh"
