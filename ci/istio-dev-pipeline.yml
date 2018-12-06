@@ -1,13 +1,11 @@
 groups:
 - name: istio
   jobs:
-  - copilot-test
-  - istio-release-test
   - istio-dev-deploy-cf
-  - run-iats-dev
+  - run-all-the-tests
+  - run-iats
   - run-scaling
   - run-sits
-  - merge-to-master
 - name: maintenance
   jobs:
   - istio-dev-bbl-up
@@ -35,24 +33,11 @@ resources:
     private_key: ((deployment_repo_private_key))
     uri: ((deployment_repo_uri))
 
-- name: copilot
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/cloudfoundry/copilot
-
 - name: istio-release
   type: git
   source:
-    branch: ((istio_release_branch))
-    uri: https://github.com/cloudfoundry/istio-release.git
-
-- name: istio-release-master-write
-  type: git
-  source:
     branch: master
-    uri: git@github.com:cloudfoundry/istio-release.git
-    private_key: ((istio_release_private_key))
+    uri: https://github.com/cloudfoundry/istio-release.git
 
 - name: istio-acceptance-tests
   type: git
@@ -109,13 +94,6 @@ resources:
     location: America/Los_Angeles
 
 jobs:
-- name: copilot-test
-  plan:
-  - get: copilot
-    trigger: true
-  - task: test
-    file: copilot/ci/test.yml
-
 - name: istio-dev-bbl-up
   serial_groups:
   - istio-dev
@@ -189,31 +167,20 @@ jobs:
     input_mapping:
       bbl-state: deployments-repo
 
-- name: istio-release-test
-  plan:
-  - aggregate:
-    - get: istio-release
-      trigger: true
-  - task: test
-    privileged: true
-    file: istio-release/ci/istio-release-tests.yml
-
 - name: istio-dev-deploy-cf
   serial_groups:
   - istio-dev
   plan:
   - aggregate:
-    - get: istio-release
-      passed: [ istio-release-test ]
+    - get: nightly
       trigger: true
+    - get: istio-release
     - get: routing-ci
     - get: latest-silk
-      trigger: true
     - get: latest-cf-mysql
     - get: cf-deployment-concourse-tasks
     - get: capi-develop
     - get: cf-deployment
-      trigger: true
     - get: deployments-repo
   - task: merge-ops-files
     file: istio-release/ci/tasks/merge-ops-files/task.yml
@@ -268,19 +235,19 @@ jobs:
       ops-files: merged-operations
       release: istio-release
 
-- name: run-iats-dev
+- name: run-all-the-tests
+  plan:
+  - get: istio-release
+
+- name: run-iats
   serial_groups:
   - istio-dev
   plan:
   - aggregate:
     - get: istio-release
-      trigger: true
       passed:
-      - istio-dev-deploy-cf
-    - get: latest-silk
+        - run-all-the-tests
       trigger: true
-      passed:
-      - istio-dev-deploy-cf
     - get: deployments-repo
     - get: istio-acceptance-tests
   - task: run-iats
@@ -296,9 +263,9 @@ jobs:
   plan:
   - aggregate:
     - get: istio-release
-      trigger: true
       passed:
-      - istio-dev-deploy-cf
+      - run-all-the-tests
+      trigger: true
     - get: deployments-repo
     - get: istio-scaling
   - task: run-scaling
@@ -315,22 +282,13 @@ jobs:
   - istio-dev
   plan:
   - aggregate:
-    - get: cf-deployment-concourse-tasks
     - get: istio-release
-      trigger: true
       passed:
-      - istio-dev-deploy-cf
-    - get: capi-develop
+      - run-all-the-tests
       trigger: true
-      passed:
-      - istio-dev-deploy-cf
-    - get: latest-silk
-      trigger: true
-      passed:
-      - istio-dev-deploy-cf
+    - get: cf-deployment-concourse-tasks
     - get: deployments-repo
     - get: sync-integration-tests
-      trigger: true
   - task: run
     input_mapping:
       bbl-state: deployments-repo
@@ -362,22 +320,3 @@ jobs:
             cd bbl-state
             "${GOPATH}/src/code.cloudfoundry.org/sync-integration-tests/run-against-env.sh"
 
-- name: merge-to-master
-  plan:
-    - aggregate:
-      - get: istio-release-master-write
-      - get: istio-release
-        passed:
-        - run-sits
-        - run-scaling
-        - run-iats-dev
-    - task: merge-branch-to-master
-      file: istio-release/ci/tasks/merge-branch-to-master/task.yml
-      params:
-        GIT_COMMIT_EMAIL: ((committer_email))
-        RELEASE_BRANCH: ((istio_release_branch))
-      input_mapping:
-        master-dir: istio-release-master-write
-    - put: istio-release-master-write
-      params:
-        repository: merged-branch

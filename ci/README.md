@@ -21,7 +21,6 @@ This directory contains a generic istio-dev pipeline for copilit and istio-relea
     lb_key: |
     ...
     committer_email: my-team+ci@pivotal.io
-    istio_release_branch: istio-dev-generic-pipeline
     istio_release_private_key: |
     ...
     ```
