@@ -247,6 +247,7 @@ jobs:
         enable-sidecar-proxying.yml
         disable-ingress-redirect-to-proxy.yml
         add-istio.yml
+        add-temporary-istio-apps-internal.yml
         scale-diego-for-ci.yml
         add-external-istio-lb.yml
         add-route-syncer.yml
