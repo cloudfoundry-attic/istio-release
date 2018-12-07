@@ -32,4 +32,3 @@ This directory contains a generic istio-dev pipeline for copilit and istio-relea
 
 1. BBL up a dev environment through the "maintenance" group.
 1. Send the commits through the pipeline
-1. When all tests pass, merge to master by clicking the last job.

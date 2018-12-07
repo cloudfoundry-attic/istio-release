@@ -63,11 +63,19 @@ resources:
     branch: master
     uri: https://github.com/cloudfoundry/routing-ci.git
 
-- name: capi-develop
+- name: capi-ci-passed
   type: git
   source:
     branch: ci-passed
     uri: https://github.com/cloudfoundry/capi-release
+
+- name: latest-cf-networking
+  type: git
+  source:
+    branch: develop
+    ignore_paths:
+    - docs
+    uri: https://github.com/cloudfoundry/cf-networking-release.git
 
 - name: latest-silk
   type: git
@@ -179,11 +187,16 @@ jobs:
     - get: latest-silk
     - get: latest-cf-mysql
     - get: cf-deployment-concourse-tasks
-    - get: capi-develop
+    - get: latest-cf-networking
+    - get: capi-ci-passed
     - get: cf-deployment
     - get: deployments-repo
   - task: merge-ops-files
     file: istio-release/ci/tasks/merge-ops-files/task.yml
+    params:
+      SOURCE1_DIR: ci/opsfiles
+    input_mapping:
+      source1: latest-cf-networking
   - aggregate:
     - task: upload-stemcell
       file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
@@ -197,7 +210,7 @@ jobs:
         BBL_STATE_DIR: ((bbl_state_dir))
       input_mapping:
         bbl-state: deployments-repo
-        local-release: capi-develop
+        local-release: capi-ci-passed
     - task: upload-latest-silk-release
       file: istio-release/ci/tasks/upload-local-release/task.yml
       params:
@@ -212,6 +225,13 @@ jobs:
       input_mapping:
         bbl-state: deployments-repo
         local-release: latest-cf-mysql
+    - task: upload-latest-cf-networking-release
+      file: istio-release/ci/tasks/upload-local-release/task.yml
+      params:
+        BBL_STATE_DIR: environments/istio-dev
+      input_mapping:
+        bbl-state: deployments-repo
+        local-release: latest-cf-networking
   - task: deploy-cf-with-created-istio-release
     file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
     params:
@@ -223,6 +243,9 @@ jobs:
         use-latest-capi-release.yml
         use-latest-silk-release.yml
         use-latest-mysql-release.yml
+        use-latest-cf-networking-release.yml
+        enable-sidecar-proxying.yml
+        disable-ingress-redirect-to-proxy.yml
         add-istio.yml
         scale-diego-for-ci.yml
         add-external-istio-lb.yml
