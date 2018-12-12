@@ -251,6 +251,7 @@ jobs:
         scale-diego-for-ci.yml
         add-external-istio-lb.yml
         add-route-syncer.yml
+        enable-tls-termination.yml
       SYSTEM_DOMAIN: ((lb_domain))
     input_mapping:
       bbl-state: deployments-repo

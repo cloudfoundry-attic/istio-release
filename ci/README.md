@@ -1,12 +1,8 @@
-# Generic istio-dev pipeline 
+# Generic istio-dev pipeline
 
 This directory contains a generic istio-dev pipeline for copilit and istio-release development.
 
 # Workflow
-1. Checkout a branch of `istio-release`
-
-    ```git checkout -b istio-dev-generic-pipeline```
-
 1. Create a params file, generate certs and fill the following fields
 
     ```

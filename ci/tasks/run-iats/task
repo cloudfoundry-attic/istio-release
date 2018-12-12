@@ -5,6 +5,7 @@ set -eo pipefail
 pushd "${PWD}/${VARS_LOCATION}" > /dev/null
   eval "$(bbl print-env)"
   cf_admin_password=$(credhub find -j -n cf_admin_password | jq -r .credentials[].name | xargs credhub get -j -n | jq -r .value)
+  wildcard_ca=$(credhub find -j -n envoy_wildcard_ca | jq -r .credentials[].name | xargs credhub get -j -n | jq .value.ca)
 popd > /dev/null
 
 gopath_dir="/root/go/src/code.cloudfoundry.org"
@@ -24,7 +25,8 @@ pushd "${gopath_dir}/istio-acceptance-tests"
   "product_page_docker_tag": "${PRODUCT_PAGE_DOCKER_REPO}",
   "reviews_docker_tag": "${REVIEWS_DOCKER_REPO}",
   "ratings_docker_tag": "${RATINGS_DOCKER_REPO}",
-  "details_docker_tag": "${DETAILS_DOCKER_REPO}"
+  "details_docker_tag": "${DETAILS_DOCKER_REPO}",
+  "wildcard_ca": ${wildcard_ca}
 }
 EOF
 
