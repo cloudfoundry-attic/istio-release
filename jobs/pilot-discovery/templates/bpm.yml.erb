@@ -1,3 +1,8 @@
+<%
+  def create_log_string(level)
+    "default:#{level},ads:#{level},mcp:#{level},rbac:#{level},model:#{level}"
+  end
+%>
 ---
 processes:
 - name: pilot-discovery
@@ -10,6 +15,7 @@ processes:
   - --plugins=health
   - --httpAddr=0.0.0.0:<%= p('port') %>
   - --mcpMaxMsgSize=8388608
+  - --log_output_level=<%= create_log_string(p('pilot.log_level')) %>
   - --mcpServerAddrs=mcps://copilot.service.cf.internal:<%= link('mcp_conn').p('listen_port_for_mcp') %>
   - --certFile=/var/vcap/jobs/pilot-discovery/config/certs/client.crt
   - --keyFile=/var/vcap/jobs/pilot-discovery/config/certs/client.key

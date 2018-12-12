@@ -35,3 +35,10 @@ properties:
   copilot.address:
     description: "Address of the copilot-server"
     default: copilot.service.cf.internal:9000
+  pilot.log_level:
+    description: |
+      Sets the log-level for all registered scopes of pilot.
+      Can be one of debug, info, warn, error, fatal or none.
+      The default of info is going to be extremely verbose
+      in most cases.
+    default: info
