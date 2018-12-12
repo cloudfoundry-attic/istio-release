@@ -298,6 +298,7 @@ jobs:
       VARS_LOCATION: deployments-repo/((bbl_state_dir))
       SYSTEM_DOMAIN: ((lb_domain))
       NUMBER_OF_APPS: 500
+      PASSING_THRESHOLD: 99.9
       CLEANUP_ORG: true
       DEPLOYMENT_NAME: cf
 
