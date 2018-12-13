@@ -1,0 +1,13 @@
+{
+  "config_sources": [
+    {
+      "address": "copilot.service.cf.internal:<%= link('mcp_conn').p('listen_port_for_mcp') %>",
+      "tls_settings": {
+        "mode": "MUTUAL",
+        "client_certificate": "/var/vcap/jobs/pilot-discovery/config/certs/client.crt",
+        "private_key": "/var/vcap/jobs/pilot-discovery/config/certs/client.key",
+        "ca_certificates": "/var/vcap/jobs/pilot-discovery/config/certs/ca.crt"
+      }
+    }
+  ]
+}

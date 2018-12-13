@@ -11,15 +11,11 @@ processes:
   - discovery
   - --configDir=/dev/null
   - --registries=MCP
-  - --meshConfig=/dev/null
+  - --meshConfig=/var/vcap/jobs/pilot-discovery/config/mesh-config.json
   - --plugins=health
   - --httpAddr=0.0.0.0:<%= p('port') %>
   - --mcpMaxMsgSize=8388608
   - --log_output_level=<%= create_log_string(p('pilot.log_level')) %>
-  - --mcpServerAddrs=mcps://copilot.service.cf.internal:<%= link('mcp_conn').p('listen_port_for_mcp') %>
-  - --certFile=/var/vcap/jobs/pilot-discovery/config/certs/client.crt
-  - --keyFile=/var/vcap/jobs/pilot-discovery/config/certs/client.key
-  - --caCertFile=/var/vcap/jobs/pilot-discovery/config/certs/ca.crt
   env:
     PILOT_ALLOW_CONCURRENT: "true"
     V2_REFRESH: "30s"
