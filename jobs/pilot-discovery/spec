@@ -27,6 +27,13 @@ properties:
   port:
     description: "Listen port for pilot discovery service"
     default: 8080
+  log_level:
+    description: |
+      Sets the log-level for all registered scopes of pilot.
+      Can be one of debug, info, warn, error, fatal or none.
+      The default of info is going to be extremely verbose
+      in most cases.
+    default: info
   copilot.server_ca_cert:
     description: "PEM-encoded CA certificate used to communicate with copilot-server"
   copilot.client_cert:
@@ -36,10 +43,3 @@ properties:
   copilot.address:
     description: "Address of the copilot-server"
     default: copilot.service.cf.internal:9000
-  pilot.log_level:
-    description: |
-      Sets the log-level for all registered scopes of pilot.
-      Can be one of debug, info, warn, error, fatal or none.
-      The default of info is going to be extremely verbose
-      in most cases.
-    default: info
