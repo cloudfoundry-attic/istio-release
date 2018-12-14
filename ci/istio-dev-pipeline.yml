@@ -281,6 +281,7 @@ jobs:
       VARS_LOCATION: deployments-repo/((bbl_state_dir))
       CF_LOGIN_DOMAIN: ((lb_domain))
       API_DOMAIN: istio.((lb_domain))
+      INCLUDE_INTERNAL_ROUTES_TESTS: ((include_internal_route_tests))
 
 - name: run-scaling
   serial_groups:

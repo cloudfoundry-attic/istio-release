@@ -12,6 +12,7 @@ This directory contains a generic istio-dev pipeline for copilit and istio-relea
     bbl_state_dir: environments/istio-dev
     bbl_gcp_region: my-gcp-region
     lb_domain: istio-dev.my-team.cf-app.com
+    include_internal_route_tests: true
     lb_cert: |
     ...
     lb_key: |
