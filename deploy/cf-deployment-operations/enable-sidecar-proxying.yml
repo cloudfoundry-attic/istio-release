@@ -33,3 +33,4 @@
     client_chain_file: ((copilot_client.certificate))
     temporary_istio_domains:
     - istio.apps.internal
+    - istio.((system_domain))
