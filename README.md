@@ -46,3 +46,4 @@ istio.io/istio.
 ./scripts/update # to sync all the submodules
 ./test-upstream-linux.sh or ./test-upstream-mac.sh
 ```
+
