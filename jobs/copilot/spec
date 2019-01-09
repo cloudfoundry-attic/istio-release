@@ -31,6 +31,11 @@ provides:
   properties:
   - frontend_tls_keypairs
 
+- name: bosh_dns_adapter_to_copilot_conn
+  type: bosh_dns_adapter_to_copilot_conn
+  properties:
+  - listen_port_for_bosh_dns_adapter
+
 properties:
   listen_port_for_mcp:
     description: "The port that Pilot MCP client will connect to, to retrieve route info"
@@ -48,6 +53,10 @@ properties:
     default: 9001
   cloud_controller_client_ca_cert:
     description: "PEM-encoded CA certificate that signed the client cert used by Cloud Controller"
+
+  listen_port_for_bosh_dns_adapter:
+    description: "The port that BOSH DNS Adapter will connect to, to query route virtual IPs"
+    default: 9002
 
   server_cert:
     description: "PEM-encoded server certificate used to communicate with all clients"
