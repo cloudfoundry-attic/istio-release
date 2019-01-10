@@ -12,7 +12,7 @@ processes:
   args:
   - discovery
   - --configDir=/dev/null
-  - --registries=MCP
+  - --registries=Mock
   - --meshConfig=/var/vcap/jobs/pilot-discovery/config/mesh-config.json
   - --plugins=health
   - --httpAddr=0.0.0.0:<%= p('port') %>
