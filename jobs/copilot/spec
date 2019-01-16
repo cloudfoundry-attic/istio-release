@@ -38,8 +38,9 @@ properties:
 
   pilot_client_ca_cert:
     description: "PEM-encoded CA certificate that signed the client cert used by Pilot platform adapter"
-  pilot_log_level:
-    description: "Sets the log level related to Pilot MCP communication. Can be one of debug, info, warn, error, fatal or none."
+
+  log_level:
+    description: "Sets the log level. Can be one of debug, info, error, or fatal."
     default: fatal
 
   listen_port_for_cloud_controller:
