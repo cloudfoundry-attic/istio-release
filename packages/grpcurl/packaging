@@ -1,5 +1,5 @@
 set -e
 
 mkdir -p ${BOSH_INSTALL_TARGET}/bin
-cp grpcurl-linux/grpcurl ${BOSH_INSTALL_TARGET}/bin
+cp grpcurl-linux/grpcurl-1 ${BOSH_INSTALL_TARGET}/bin/grpcurl
 chmod a+x ${BOSH_INSTALL_TARGET}/bin/grpcurl

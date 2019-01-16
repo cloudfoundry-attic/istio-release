@@ -2,5 +2,5 @@
 name: grpcurl
 
 files:
-  - grpcurl-linux/grpcurl
+  - grpcurl-linux/grpcurl-1
 
