@@ -18,6 +18,7 @@ processes:
   - --httpAddr=0.0.0.0:<%= p('port') %>
   - --mcpMaxMsgSize=8388608
   - --log_output_level=<%= create_log_string(p('log_level')) %>
+  - --secureGrpcAddr=
   env:
     PILOT_ALLOW_CONCURRENT: "true"
     V2_REFRESH: "30s"
