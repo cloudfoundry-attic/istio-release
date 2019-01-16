@@ -28,7 +28,7 @@ describe 'config.json.erb' do
         'server_cert' => 'server-cert',
         'server_key' => 'server-key',
         'experimental_vip_cidr' => '127.128.0.0/9',
-        'pilot_log_level' => 'fatal',
+        'log_level' => 'fatal',
         'bbs' => {
           'sync_interval' => '30s',
           'server_ca_cert' => 'bbs-ca',
