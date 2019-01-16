@@ -1,8 +1,7 @@
-# TODO(gabe): do we need a firewall rule to allow this healthcheck?
 resource "google_compute_http_health_check" "cf-istio-router" {
   name         = "${var.env_id}-cf-istio-router"
-  port         = 8001
-  request_path = "/healthcheck/ok"
+  port         = 8002
+  request_path = "/healthcheck"
 }
 
 resource "google_compute_target_pool" "cf-istio-router" {
@@ -35,7 +34,7 @@ resource "google_compute_firewall" "cf-istio-router-health-check" {
 
   allow {
     protocol = "tcp"
-    ports    = ["8001"]
+    ports    = ["8002"]
   }
 
   source_ranges = ["209.85.152.0/22", "209.85.204.0/22", "35.191.0.0/16"]
