@@ -24,7 +24,7 @@ describe 'config.json.erb' do
         'listen_port_for_mcp' => 9009,
         'pilot_client_ca_cert' => 'pilot-ca',
         'listen_port_for_cloud_controller' => 9001,
-        'listen_port_for_bosh_dns_adapter' => 9002,
+        'listen_port_for_vip_resolver' => 9002,
         'cloud_controller_ca_cert' => 'cc-ca',
         'server_cert' => 'server-cert',
         'server_key' => 'server-key',
