@@ -2,5 +2,5 @@
 name: envoy
 
 files:
-  - envoy-linux/envoy-15cfc5ad1a4d622126f642fa70699af753a2d310.tgz
+  - envoy-linux/envoy-v1.9.0.tgz
 
