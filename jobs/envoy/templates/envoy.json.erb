@@ -7,8 +7,8 @@
 
 config = {
   "node": {
-    "id": "router~x~x~x",
-    "cluster": "x"
+    "id": "router~#{spec.ip}~#{spec.id}~x",
+    "cluster": "istio-router"
   },
   "admin": {
     "access_log_path": "/dev/stdout",
