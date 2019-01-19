@@ -23,6 +23,9 @@ consumes:
   type: mcp_conn
   optional: true
 
+- name: galley_mcp_server
+  type: galley_mcp_server
+
 properties:
   port:
     description: "Listen port for pilot discovery service"

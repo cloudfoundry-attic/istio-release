@@ -1,0 +1,17 @@
+---
+processes:
+- name: galley-fs
+  executable: /var/vcap/packages/galley/bin/galley
+  args:
+  - --configPath=/var/vcap/data/istio-config
+  - --meshConfigFile=/var/vcap/jobs/galley-fs/config/mesh-config.json
+  - --insecure
+  - --enable-validation=false
+  - --livenessProbePath=
+  - --readinessProbePath=
+  - --log_output_level=default:info
+  - --server-address=0.0.0.0:<%= p('port') %>
+  - --ctrlz_port=19876
+  - --monitoringPort=19093
+  additional_volumes:
+  - path: /var/vcap/data/istio-config
