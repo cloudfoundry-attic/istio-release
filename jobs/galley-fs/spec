@@ -1,0 +1,20 @@
+---
+name: galley-fs
+templates:
+  bpm.yml.erb: config/bpm.yml
+  mesh-config.json.erb: config/mesh-config.json
+
+packages:
+- galley
+- golang-1-linux
+
+provides:
+- name: galley_mcp_server
+  type: galley_mcp_server
+  properties:
+  - port
+
+properties:
+  port:
+    description: "Listen port for Galley MCP Server"
+    default: 9901

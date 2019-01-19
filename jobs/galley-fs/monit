@@ -1,0 +1,5 @@
+check process galley-fs
+  with pidfile /var/vcap/sys/run/bpm/galley-fs/galley-fs.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start galley-fs"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop galley-fs"
+  group vcap

@@ -8,6 +8,9 @@
         "private_key": "/var/vcap/jobs/pilot-discovery/config/certs/client.key",
         "ca_certificates": "/var/vcap/jobs/pilot-discovery/config/certs/ca.crt"
       }
+    },
+    {
+      "address": "galley.service.cf.internal:<%= link('galley_mcp_server').p('port') %>"
     }
   ]
 }

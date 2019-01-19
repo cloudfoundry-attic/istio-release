@@ -38,6 +38,8 @@
           server_ca_cert: "((diego_bbs_client.ca))"
           client_cert: "((diego_bbs_client.certificate))"
           client_key: "((diego_bbs_client.private_key))"
+    - name: galley-fs
+      release: istio
 
 - type: replace
   path: /instance_groups/name=istio-router?
@@ -91,6 +93,17 @@
   path: /addons/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties/aliases/-
   value:
     domain: copilot.service.cf.internal
+    targets:
+    - deployment: cf
+      domain: bosh
+      instance_group: istio-control
+      network: default
+      query: "*"
+
+- type: replace
+  path: /addons/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties/aliases/-
+  value:
+    domain: galley.service.cf.internal
     targets:
     - deployment: cf
       domain: bosh
