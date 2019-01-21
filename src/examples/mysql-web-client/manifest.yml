@@ -1,0 +1,12 @@
+---
+applications:
+- name: mysql-web-client
+  memory: 32M
+  disk_quota: 32M
+  buildpack: go_buildpack
+  env:
+    GOPACKAGENAME: examples/mysql-web-client
+    MYSQL_HOST: ensembldb.ensembl.org
+    MYSQL_PORT: 3306
+    MYSQL_USER: anonymous
+    MYSQL_PASSWORD:

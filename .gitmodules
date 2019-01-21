@@ -4,3 +4,9 @@
 [submodule "src/istio.io/istio"]
 	path = src/istio.io/istio
 	url = https://github.com/istio/istio
+[submodule "src/examples/mysql-web-client/vendor/github.com/go-sql-driver/mysql"]
+	path = src/examples/mysql-web-client/vendor/github.com/go-sql-driver/mysql
+	url = https://github.com/go-sql-driver/mysql
+[submodule "src/examples/mysql-web-client/vendor/github.com/ryanmoran/viron"]
+	path = src/examples/mysql-web-client/vendor/github.com/ryanmoran/viron
+	url = https://github.com/ryanmoran/viron
