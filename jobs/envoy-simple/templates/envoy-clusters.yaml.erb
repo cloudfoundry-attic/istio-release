@@ -1,0 +1,20 @@
+# this file is being watched for MOVES via inotify
+# to trigger a dynamic update without restarting envoy,
+# write the updates to a new file and then
+#    mv envoy-clusters.yaml.new envoy-clusters.yaml
+version_info: "0"
+resources:
+- '@type': type.googleapis.com/envoy.api.v2.Cluster
+  name: local_mysql
+  connect_timeout: 0.25s
+  type: STATIC
+  lb_policy: ROUND_ROBIN
+  load_assignment:
+    cluster_name: local_mysql
+    endpoints:
+    - lb_endpoints:
+      - endpoint:
+          address:
+            socket_address:
+              address: 127.0.0.1
+              port_value: 3306

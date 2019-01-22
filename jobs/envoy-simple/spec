@@ -3,6 +3,8 @@ name: envoy-simple
 templates:
   bpm.yml.erb: config/bpm.yml
   envoy.yaml.erb: config/envoy.yaml
+  envoy-listeners.yaml.erb: config/envoy-listeners.yaml
+  envoy-clusters.yaml.erb: config/envoy-clusters.yaml
 
 packages:
   - envoy
