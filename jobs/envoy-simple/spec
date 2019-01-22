@@ -1,0 +1,8 @@
+---
+name: envoy-simple
+templates:
+  bpm.yml.erb: config/bpm.yml
+  envoy.yaml.erb: config/envoy.yaml
+
+packages:
+  - envoy

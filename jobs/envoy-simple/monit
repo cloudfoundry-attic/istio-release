@@ -1,0 +1,5 @@
+check process envoy-simple
+  with pidfile /var/vcap/sys/run/bpm/envoy-simple/envoy-simple.pid
+  start program "/var/vcap/jobs/bpm/bin/bpm start envoy-simple"
+  stop program "/var/vcap/jobs/bpm/bin/bpm stop envoy-simple"
+  group vcap

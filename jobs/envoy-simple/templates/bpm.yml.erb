@@ -1,0 +1,10 @@
+---
+processes:
+- name: envoy-simple
+  executable: /var/vcap/packages/envoy/bin/envoy
+  args:
+  - -c /var/vcap/jobs/envoy-simple/config/envoy.yaml
+  - --v2-config-only
+  - --max-obj-name-len 200
+  capabilities:
+  - NET_BIND_SERVICE
