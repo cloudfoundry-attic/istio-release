@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
-cd "$(dirname "$0")"
+ROOT="$(dirname "$0")"
 
-docker run --rm -v "${PWD}":/workspace/istio-release cloudfoundry/cf-routing-pipeline /bin/bash /workspace/istio-release/test-upstream-linux.sh
+IMAGE="$(bosh int $ROOT/ci/istio-upstream-tests.yml --path /image_resource/source/repository)"
+TAG="$(bosh int $ROOT/ci/istio-upstream-tests.yml --path /image_resource/source/tag)"
+
+cd $ROOT
+
+docker run --privileged=true --rm -v "${PWD}":/workspace/istio-release "$IMAGE:$TAG" /bin/bash /workspace/istio-release/test-upstream-linux.sh
