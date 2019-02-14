@@ -11,4 +11,4 @@ processes:
   hooks:
     pre_start: /var/vcap/jobs/envoy/bin/bpm-pre-start
   limits:
-    open_files: 100000
+    open_files: <%= p('open_files') %>

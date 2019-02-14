@@ -16,3 +16,8 @@ consumes:
 - name: frontend_tls_keypairs
   type: frontend_tls_keypairs
   optional: true
+
+properties:
+- name: open_files
+  description: "The maximum number of open files."
+  default: 10000
