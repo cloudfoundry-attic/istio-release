@@ -19,6 +19,18 @@ config = {
       }
     }
   },
+  "stats_sinks": {
+    "name": "envoy.statsd",
+    "config": {
+      "address": {
+        "socket_address": {
+          "protocol": p('statsd.protocol'),
+          "address": p('statsd.address'),
+          "port_value": p('statsd.port')
+        }
+      }
+    }
+  },
   "static_resources": {
     "listeners": [
       {
