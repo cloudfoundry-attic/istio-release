@@ -32,6 +32,15 @@ describe 'envoy.json.erb' do
 
   subject(:parsed_yaml) do
     binding = Bosh::Template::EvaluationContext.new(deployment_manifest_fragment).get_binding
+    eval(
+      'class Link
+        def instances()
+          []
+        end
+      end
+      def link(s)
+        return Link.new()
+      end', binding)
     JSON.parse(ERB.new(erb_yaml).result(binding))
   end
 
