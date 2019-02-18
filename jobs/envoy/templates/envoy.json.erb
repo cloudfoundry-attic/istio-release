@@ -1,9 +1,9 @@
 <%=
 
   pilots = []
-  link("pilot").instances.each do |instance|
-    pilots << {"socket_address": {"address": "#{instance.address}", "port_value": "15010", "protocol": "TCP"}}
-  end
+  # link("pilot").instances.each do |instance|
+  #   pilots << {"socket_address": {"address": "#{instance.address}", "port_value": "15010", "protocol": "TCP"}}
+  # end
 
 config = {
   "node": {
@@ -16,18 +16,6 @@ config = {
       "socket_address": {
         "address": "0.0.0.0",
         "port_value": 8001
-      }
-    }
-  },
-  "stats_sinks": {
-    "name": "envoy.statsd",
-    "config": {
-      "address": {
-        "socket_address": {
-          "protocol": p('statsd.protocol'),
-          "address": p('statsd.address'),
-          "port_value": p('statsd.port')
-        }
       }
     }
   },
@@ -91,6 +79,21 @@ config = {
     }
   }
 }
+
+if p('statsd.enabled')
+  config["stats_sinks"] = {
+    "name": "envoy.statsd",
+    "config": {
+      "address": {
+        "socket_address": {
+          "address": p('statsd.address'),
+          "protocol": p('statsd.protocol'),
+          "port_value": p('statsd.port')
+        }
+      }
+    }
+  }
+end
 config.to_json()
 
 %>
