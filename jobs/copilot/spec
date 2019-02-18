@@ -25,6 +25,7 @@ provides:
   type: mcp_conn
   properties:
   - listen_port_for_mcp
+  - dns_address_for_mcp
 
 - name: frontend_tls_keypairs
   type: frontend_tls_keypairs
@@ -40,6 +41,10 @@ properties:
   listen_port_for_mcp:
     description: "The port that Pilot MCP client will connect to, to retrieve route info"
     default: 9009
+  dns_address_for_mcp:
+    description: "The dns address that Pilot MCP client will connect to, to retrieve route info"
+    default: copilot.service.cf.internal
+
 
   pilot_client_ca_cert:
     description: "PEM-encoded CA certificate that signed the client cert used by Pilot platform adapter"
