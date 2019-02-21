@@ -20,4 +20,4 @@ consumes:
 properties:
 - name: open_files
   description: "The maximum number of open files."
-  default: 10000
+  default: 1024
