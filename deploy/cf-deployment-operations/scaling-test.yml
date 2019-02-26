@@ -51,7 +51,7 @@
 # makes vms deploy faster
 - type: replace
   path: /update/max_in_flight
-  value: 12
+  value: 4
 
 # similar vm type as prod
 - type: replace
