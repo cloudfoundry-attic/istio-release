@@ -1,7 +1,7 @@
 {
   "config_sources": [
     {
-      "address": "copilot.service.cf.internal:<%= link('mcp_conn').p('listen_port_for_mcp') %>",
+      "address": "<%= link('mcp_conn').p('dns_address_for_mcp') %>:<%= link('mcp_conn').p('listen_port_for_mcp') %>",
       "tls_settings": {
         "mode": "MUTUAL",
         "client_certificate": "/var/vcap/jobs/pilot-discovery/config/certs/client.crt",
