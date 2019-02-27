@@ -21,3 +21,15 @@ properties:
   open_files:
     description: "The maximum number of open files."
     default: 1024
+  statsd.enabled:
+    description: Should a statsd sink be configured
+    default: false
+  statsd.address:
+    description: The address of the statsd sink
+    default: 127.0.0.1
+  statsd.port:
+    description: The port of the statsd sink
+    default: 8125
+  statsd.protocol:
+    description: The protocol used for statsd communication
+    default: UDP

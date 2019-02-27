@@ -79,6 +79,21 @@ config = {
     }
   }
 }
+
+if p('statsd.enabled')
+  config["stats_sinks"] = {
+    "name": "envoy.statsd",
+    "config": {
+      "address": {
+        "socket_address": {
+          "address": p('statsd.address'),
+          "protocol": p('statsd.protocol'),
+          "port_value": p('statsd.port')
+        }
+      }
+    }
+  }
+end
 config.to_json()
 
 %>
