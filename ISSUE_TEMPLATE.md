@@ -1,12 +1,3 @@
----
-name: istio-release issue template
-about: 'Starting point for contributors '
-title: ''
-labels: ''
-assignees: ''
-
----
-
 Thanks for submitting an issue to `istio-release`. We are always trying to improve! To help us, please fill out the following template and our bot will add a story to our icebox. From there we will work to prioritize it on the backlog. 
 
 ## Issue
