@@ -1,0 +1,229 @@
+groups: []
+resources:
+- name: cf-deployment
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-deployment
+- name: routing-release-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry/routing-release
+- name: istio-release
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/istio-release
+- name: routing-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/routing-ci
+- name: capi-ci-passed
+  type: git
+  source:
+    branch: ci-passed
+    uri: https://github.com/cloudfoundry/capi-release
+- name: cf-deployment-concourse-tasks
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks
+- name: evening-trigger
+  type: time
+  source:
+    days:
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    location: America/Los_Angeles
+    start: 8:00 PM
+    stop: 8:01 PM
+- name: morning-trigger
+  type: time
+  source:
+    days:
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    location: America/Los_Angeles
+    start: 6:00 AM
+    stop: 6:01 AM
+- name: deployments-routing
+  type: git
+  source:
+    branch: master
+    private_key: ((github_private_key.private_key))
+    uri: git@github.com:cloudfoundry/deployments-routing.git
+resource_types: []
+jobs:
+- name: chicago-bbl-up
+  serial_groups:
+  - chicago
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: routing-ci
+    - get: istio-release
+    - get: morning-trigger
+      trigger: true
+  - task: merge-bbl-config
+    file: routing-ci/merge-bbl-config/task.yml
+    params:
+      SOURCE1_DIR: bbl-configs/add-parent-dns-full
+      SOURCE2_DIR: deploy/bbl-config
+      SOURCE3_DIR: datadog-config
+    input_mapping:
+      source1: routing-ci
+      source2: istio-release
+      source3: deployments-routing
+  - task: bbl-up
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    params:
+      BBL_CONFIG_DIR: .
+      BBL_ENV_NAME: chicago
+      BBL_GCP_REGION: us-central1
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_IAAS: gcp
+      BBL_LB_CERT: ../lb_certs/cert.pem
+      BBL_LB_KEY: ../lb_certs/key.pem
+      BBL_STATE_DIR: chicago/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      LB_DOMAIN: chicago.routing.cf-app.com
+    input_mapping:
+      bbl-config: merged-bbl-config
+      bbl-state: deployments-routing
+    ensure:
+      put: deployments-routing
+      params:
+        rebase: true
+        repository: updated-bbl-state
+- name: chicago-bbl-destroy
+  serial_groups:
+  - chicago
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+    - get: evening-trigger
+      passed:
+      - chicago-delete-deployment
+      trigger: true
+  - task: destroy-chicago
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_STATE_DIR: chicago/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-state: deployments-routing
+    ensure:
+      put: deployments-routing
+      params:
+        rebase: true
+        repository: updated-bbl-state
+- name: chicago-deploy-cf
+  serial_groups:
+  - chicago
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: cf-deployment
+    - get: routing-ci
+    - get: deployments-routing
+    - get: istio-release
+    - get: routing-release-develop
+    - get: capi-ci-passed
+    - get: morning-trigger
+      passed:
+      - chicago-bbl-up
+      trigger: true
+  - task: upload-stemcell
+    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+    params:
+      BBL_STATE_DIR: chicago/bbl-state
+      INFRASTRUCTURE: google
+    input_mapping:
+      bbl-state: deployments-routing
+  - task: merge-ops-files
+    file: routing-ci/merge-ops-files/task.yml
+    params:
+      ENVIRONMENT: chicago
+      SOURCE1_DIR: deploy/cf-deployment-operations
+    input_mapping:
+      source1: istio-release
+  - aggregate:
+    - task: create-capi-release
+      file: routing-ci/create-release-tarball/task.yml
+      input_mapping:
+        release-dir: capi-ci-passed
+    - task: create-routing-release
+      file: routing-ci/create-release-tarball/task.yml
+      input_mapping:
+        release-dir: routing-release-develop
+      output_mapping:
+        release-tarball: routing-release-tarball
+  - aggregate:
+    - task: upload-capi-release-with-copilot
+      file: routing-ci/bosh2-command/task-with-release.yml
+      params:
+        COMMAND: upload-release ./release/*.tgz
+        ENVIRONMENT: chicago
+      input_mapping:
+        release: release-tarball
+    - task: upload-routing-release
+      file: routing-ci/bosh2-command/task-with-release.yml
+      params:
+        COMMAND: upload-release ./release/*.tgz
+        ENVIRONMENT: chicago
+      input_mapping:
+        release: routing-release-tarball
+  - task: deploy-cf-with-created-istio-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    params:
+      BBL_STATE_DIR: chicago/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      OPS_FILES: |
+        use-compiled-releases.yml
+        enable-service-discovery.yml
+        enable-routing-integrity.yml
+        use-latest-capi-release.yml
+        use-latest-silk-release.yml
+        add-istio.yml
+        enable-sidecar-proxying.yml
+        disable-ingress-sidecar-proxying.yml
+        add-external-istio-lb.yml
+        add-route-syncer.yml
+        enable-tls-termination.yml
+      SYSTEM_DOMAIN: chicago.routing.cf-app.com
+    input_mapping:
+      bbl-state: deployments-routing
+      ops-files: merged-operations
+      release: istio-release
+      vars-files: deployments-routing
+      vars-store: deployments-routing
+- name: chicago-delete-deployment
+  serial_groups:
+  - chicago
+  build_logs_to_retain: 100
+  plan:
+  - aggregate:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: evening-trigger
+      trigger: true
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    params:
+      BBL_STATE_DIR: chicago/bbl-state
+      DEPLOYMENT_NAME: cf
+    input_mapping:
+      bbl-state: deployments-routing
