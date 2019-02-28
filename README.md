@@ -53,3 +53,5 @@ istio.io/istio.
 ./test-upstream-linux.sh or ./test-upstream-mac.sh
 ```
 
+## Contributing to istio-release
+Please follow our [Code of Conduct](https://www.cloudfoundry.org/code-of-conduct/).
