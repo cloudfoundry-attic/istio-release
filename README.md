@@ -32,8 +32,12 @@ bosh create-release && bosh upload-release
 bosh deploy cf.yml -o deploy/cf-deployment-operations/add-istio.yml
 ```
 
+## Contributing to istio-release
+Please follow our [Code of Conduct](https://www.cloudfoundry.org/code-of-conduct/).
 
-## Running Tests
+### Running Tests
+Before submitting a PR, please run our tests and update any tests relevant to
+your changes.
 
 ### Run release tests
 Test your changes to istio-release. This script tests changes in copilot and in
@@ -52,6 +56,3 @@ istio.io/istio.
 ./scripts/update # to sync all the submodules
 ./test-upstream-linux.sh or ./test-upstream-mac.sh
 ```
-
-## Contributing to istio-release
-Please follow our [Code of Conduct](https://www.cloudfoundry.org/code-of-conduct/).
