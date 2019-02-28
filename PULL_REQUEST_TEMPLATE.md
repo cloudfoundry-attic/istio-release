@@ -1,4 +1,4 @@
-thanks for contributing to 'istio-release'. To speed up the process of reviewing your pull request please provide us with:
+Thanks for contributing to 'istio-release'. To help us, please fill out the following template and our bot will add a story to our icebox. From there we will work to prioritize it on the backlog. 
 
 * A short explanation of the proposed change:
 
