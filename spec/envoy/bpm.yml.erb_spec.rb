@@ -26,8 +26,7 @@ describe 'bpm.yml.erb' do
           {
             'args' => [
               '-c /var/vcap/jobs/envoy/config/envoy.json',
-              '--max-obj-name-len 200',
-              '--v2-config-only'
+              '--max-obj-name-len 200'
             ],
             'capabilities' => ['NET_BIND_SERVICE'],
             'executable' => '/var/vcap/packages/envoy/bin/envoy',
