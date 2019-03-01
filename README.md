@@ -45,7 +45,7 @@ the BOSH release.
 
 ```
 ./scripts/update # to sync all the submodules
-./test-release-linux.sh or ./test-release-mac.sh
+./scripts/test
 ```
 
 ### Run upstream tests

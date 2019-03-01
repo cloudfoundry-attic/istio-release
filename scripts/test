@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -euo pipefail
+
+ROOT="$(cd $(dirname $0)/.. && pwd)"
+
+bundle
+bundle exec rspec "${ROOT}/spec"
+
+pushd "${ROOT}/src/code.cloudfoundry.org/copilot" > /dev/null
+  ginkgo -r -p --randomizeAllSpecs --randomizeSuites --failOnPending --trace --race --progress
+popd > /dev/null

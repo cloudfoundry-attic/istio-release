@@ -16,7 +16,7 @@ Thanks for contributing to 'istio-release'. To help us, please fill out the foll
 
 * [ ] I have made this pull request to the `master` branch
 
-* [ ] I have run all the unit tests using `test-release-mac.sh`
+* [ ] I have run all the unit tests using `scripts/test`
 
 * [ ] I have run Istio Acceptance Tests on bosh lite
 
