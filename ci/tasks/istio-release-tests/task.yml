@@ -10,5 +10,5 @@ inputs:
 - name: istio-release
 
 run:
-  path: istio-release/test-release-linux.sh
+  path: istio-release/ci/tasks/istio-release-tests/task
   user: root

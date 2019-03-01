@@ -2,11 +2,13 @@
 
 set -euo pipefail
 
-ROOT="$(cd $(dirname $0)/.. && pwd)"
+ROOT="$(cd "$(dirname "${0}")/.." && pwd)"
 
-bundle
-bundle exec rspec "${ROOT}/spec"
+pushd "${ROOT}" > /dev/null
+  bundle
+  bundle exec rspec "${ROOT}/spec"
 
-pushd "${ROOT}/src/code.cloudfoundry.org/copilot" > /dev/null
-  ginkgo -r -p --randomizeAllSpecs --randomizeSuites --failOnPending --trace --race --progress
+  pushd ./src/code.cloudfoundry.org/copilot > /dev/null
+    ginkgo -r -p --randomizeAllSpecs --randomizeSuites --failOnPending --trace --race --progress
+  popd > /dev/null
 popd > /dev/null
