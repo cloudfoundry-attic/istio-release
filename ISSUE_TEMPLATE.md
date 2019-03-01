@@ -6,7 +6,7 @@ Thanks for submitting an issue to `istio-release`. We are always trying to impro
 
 ## Context
 
-[provide more detailed introduction]
+[provide more detailed introduction and the context on what the impact of this is to your operations e.g. this is critical and is impacting all our apps on production]
 
 ## Steps to Reproduce
 
