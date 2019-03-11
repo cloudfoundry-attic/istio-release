@@ -45,6 +45,12 @@ describe 'envoy.json.erb' do
   end
 
   context 'given a generally valid manifest' do
+    it 'should disable statistics gathering' do
+      expect(parsed_yaml['stats_config']).not_to eq(nil)
+      expect(parsed_yaml['stats_config']['stats_matcher']).not_to eq(nil)
+      expect(parsed_yaml['stats_config']['stats_matcher']['reject_all']).to eq(true)
+    end
+
     context 'when statsd is not configured' do
       it 'should not configure the property stats_sinks' do
         expect(parsed_yaml['stats_sinks']).to eq(nil)
