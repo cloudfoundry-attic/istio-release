@@ -1,0 +1,55 @@
+name: istio
+version: 1.0.10
+commit_hash: 3f4d1aa
+uncommitted_changes: false
+jobs:
+- name: copilot
+  version: b5f56919af7feafd1fdeebfd856adac86dc62b05910562dfc6c068f84dfda019
+  fingerprint: b5f56919af7feafd1fdeebfd856adac86dc62b05910562dfc6c068f84dfda019
+  sha1: sha256:92774f1b7e26d7c02e96f3dec5685854c45ef492befd729fcd792177252f7b65
+- name: envoy
+  version: e78b2a8b73deb9a0ce0b1b688ab54cd69d8db6fd548a219d7eb03288e7c96490
+  fingerprint: e78b2a8b73deb9a0ce0b1b688ab54cd69d8db6fd548a219d7eb03288e7c96490
+  sha1: sha256:27f4a41307e74c0ac04c4bfee330f505d6b8c074159f77d337cfaaf52fb263a5
+- name: pilot-discovery
+  version: e173ed32386bb2a772a555da49ac001c2e7c599c152ab8802cdb72f0cc2fc30d
+  fingerprint: e173ed32386bb2a772a555da49ac001c2e7c599c152ab8802cdb72f0cc2fc30d
+  sha1: sha256:f4643233a558875d36d9cf8de88d7c25d401b22f3049053a6720853bf2b12f5d
+packages:
+- name: copilot
+  version: 387fc2a68771c24be434b6f09a994befbfac62b13ec7951630d320b7f7be3785
+  fingerprint: 387fc2a68771c24be434b6f09a994befbfac62b13ec7951630d320b7f7be3785
+  sha1: sha256:34c9663b18efee18466f4df5989cf0aa325518691160f3a7aff7fdf12577483e
+  dependencies:
+  - golang-1-linux
+- name: envoy
+  version: 776eec30022304b5342972ee5438afe2a36e89c9aa1a687812a2438f16e04401
+  fingerprint: 776eec30022304b5342972ee5438afe2a36e89c9aa1a687812a2438f16e04401
+  sha1: sha256:066535fd86ff8c446f25b96b1c2a7356f946616719786a8de6f36df2f7d92de3
+  dependencies: []
+- name: golang-1-linux
+  version: 4b37d308b947ad4932c10781224b0db02ad274ca174c6851d09e49107e3eca82
+  fingerprint: 4b37d308b947ad4932c10781224b0db02ad274ca174c6851d09e49107e3eca82
+  sha1: sha256:edfa152be5680f6a0f74de79018f0dbda7a1fd546927b51b08c10158f057f4ab
+  dependencies: []
+- name: grpcurl
+  version: e3fed164b4d010650526f35e86ef6212507fae22ed6b84261b938a8aba0d20e4
+  fingerprint: e3fed164b4d010650526f35e86ef6212507fae22ed6b84261b938a8aba0d20e4
+  sha1: sha256:f678c9c6e7e1a1a7fe964fae9ab1b59c39fa71971239cc302f1d0b377d19286d
+  dependencies: []
+- name: librarian
+  version: 330e9b0c56ce4c1f83afe0665e73bd619faf05c2ea47e331ec5096616f023f55
+  fingerprint: 330e9b0c56ce4c1f83afe0665e73bd619faf05c2ea47e331ec5096616f023f55
+  sha1: sha256:61a2eb6fb78c3f060212adfe6e062be86c5543f614d2110ee40432e301f3aa57
+  dependencies:
+  - golang-1-linux
+- name: pilot
+  version: 7f95f78d1342ce976d7f64ade0699a342387fbd29ad554c098dd3dbb6b6c0ccd
+  fingerprint: 7f95f78d1342ce976d7f64ade0699a342387fbd29ad554c098dd3dbb6b6c0ccd
+  sha1: sha256:2238d19a04381f15926710fa6e71e7ebb439a064227dc3c419c39813a3ea8d7b
+  dependencies:
+  - golang-1-linux
+license:
+  version: 7765bf2fe7f1ac25a407022308d7b687d5006fc6a5e40ce7a1aa8a5a34e705d4
+  fingerprint: 7765bf2fe7f1ac25a407022308d7b687d5006fc6a5e40ce7a1aa8a5a34e705d4
+  sha1: sha256:1db6f4d4b23c3978c16e6f5805d12c78ee99ad7d97a5d759d5ab96ae7e81d5ac
