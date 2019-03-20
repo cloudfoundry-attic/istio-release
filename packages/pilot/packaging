@@ -1,14 +1,16 @@
-set -e -x
+#!/usr/bin/env bash
 
-mkdir -p ${BOSH_INSTALL_TARGET}/src
-cp -a . ${BOSH_INSTALL_TARGET}/src
-export GOPATH=${BOSH_INSTALL_TARGET}
+set -ex
 
-export GOROOT=$(readlink -nf /var/vcap/packages/golang-*-linux)
-export PATH=$GOROOT/bin:$PATH
-pushd $GOPATH/src
-  go install istio.io/istio/pilot/cmd/pilot-discovery
+source /var/vcap/packages/golang-*-linux/bosh/compile.env
+
+mkdir -p "${GOPATH}/src"
+
+mv istio.io "${GOPATH}/src"
+
+pushd "${GOPATH}/src/istio.io/istio/pilot/cmd/pilot-discovery"
+  go build -o "${BOSH_INSTALL_TARGET}/bin/pilot-discovery"
 popd
 
 # clean up source artifacts
-rm -rf ${BOSH_INSTALL_TARGET}/src ${BOSH_INSTALL_TARGET}/pkg
+rm -rf "${BOSH_INSTALL_TARGET}/src" "${BOSH_INSTALL_TARGET}/pkg"
