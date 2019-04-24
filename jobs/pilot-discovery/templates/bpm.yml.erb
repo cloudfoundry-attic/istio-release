@@ -14,7 +14,7 @@ processes:
   - --configDir=/dev/null
   - --registries=Mock
   - --meshConfig=/var/vcap/jobs/pilot-discovery/config/mesh-config.json
-  - --plugins=health
+  - --plugins=health,authn
   - --httpAddr=0.0.0.0:<%= p('port') %>
   - --mcpMaxMsgSize=8388608
   - --log_output_level=<%= create_log_string(p('log_level')) %>
