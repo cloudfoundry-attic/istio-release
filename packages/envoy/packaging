@@ -1,5 +1,5 @@
 set -e
 
-tar -xf envoy-linux/envoy-6ac936f2750c39a8b4fb232d6ddc4802f4e6aeee.tgz
+tar -xf envoy-linux/envoy-v1.9.0.tgz
 mkdir -p ${BOSH_INSTALL_TARGET}/bin
 cp envoy ${BOSH_INSTALL_TARGET}/bin
