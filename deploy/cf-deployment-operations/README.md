@@ -23,10 +23,8 @@ To deploy on bosh-lite, apply these ops-files:
 | [`scale-diego-for-ci.yml`](scale-diego-for-ci.yml) | Scales to 4 diego cell instances| |
 | [`scaling-test.yml`](scaling-test.yml) | Scales to a large deployment for scaling tests| 100 Diego Cells, 10 API, 5 cc workers, 14 dopplers, 12 log-api, 12 nozzle  |
 | [`use-latest-capi-release.yml`](use-latest-capi-release.yml) | Use latest capi release | |
-| [`use-latest-cf-networking.yml`](use-latest-cf-networking.yml) | Use latest cf networking release | |
 | [`use-latest-cf-networking-release.yml`](use-latest-cf-networking-release.yml) | Use latest cf networking release | |
 | [`use-latest-mysql-release.yml`](use-latest-mysql-release.yml) | Use latest mysql release | |
 | [`use-latest-routing-release.yml`](use-latest-routing-release.yml) | Use latest routing release | |
-| [`use-latest-silk.yml`](use-latest-silk.yml) | Use latest silk release | |
 | [`use-latest-silk-release.yml`](use-latest-silk-release.yml) | Use latest silk release | |
 
