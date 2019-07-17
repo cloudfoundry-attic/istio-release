@@ -7,14 +7,12 @@ To deploy on full bosh, apply these ops-files:
 
 To deploy on bosh-lite, apply these ops-files:
 - `add-istio.yml`
-- `add-route-syncer.yml`
 
 
 | Name | Purpose | Notes |
 |:---  |:---     |:---   |
 | [`add-external-istio.lb.yml`](add-external-istio.lb.yml)| Adds the `cf-istio-router-network-properties` vm extension to the istio router. This extension is defined in `ci/planpatches/cloud-config/istio.yml`. This is needed to setup the load balancer for the istio rotuer.| |
 | [`add-istio.yml`](add-istio.yml) | Optionally enables istio service mesh for external routes | |
-| [`add-route-syncer.yml`](add-route-syncer.yml) | An empty file | |
 | [`disable-ingress-sidecar-proxying.yml`](disable-ingress-sidecar-proxying.yml) | Disables redirecting all traffic entering the app container to the sidecar envoy.  | Currently the redirect feature breaks tcp routes (and maybe other things) so this opsfile is needed if you want those things to continue working. | 
 | [`enable-sidecar-proxying.yml`](enable-sidecar-proxying.yml) | Optionally enables istio service mesh for internal routes on a per domain basis. | This opsfile results in all traffic for defined internal mesh routes being proxied through the sidecar envoy for the source app before being send to the destination app. It also results in _all_ traffic entering the app container to be redirected to the destination sidecar envoy (this is for the half completed mtls feature). This ingress redirect breaks tcp routing (and maybe other things). If you want tcp routing to continue working, you must use the `disable-ingress-sidecar-proxying.yml` opsfile in addition to this one. |
 | [`enable-tls-termination.yml`](enable-tls-termination.yml) | ??? | ??? |
