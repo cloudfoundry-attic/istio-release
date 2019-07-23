@@ -6,7 +6,7 @@
     private_key: "((envoy_wildcard_ca.private_key))"
 
 - type: replace
-  path: /variables?/-
+  path: /variables?/name=envoy_wildcard_ca?
   value:
     name: envoy_wildcard_ca
     type: certificate
