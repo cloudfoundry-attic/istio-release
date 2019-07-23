@@ -1,6 +1,6 @@
 ---
 - type: replace
-  path: /releases/-
+  path: /releases/name=istio?
   value:
     name: istio
     version: latest
@@ -38,6 +38,10 @@
           server_ca_cert: "((diego_bbs_client.ca))"
           client_cert: "((diego_bbs_client.certificate))"
           client_key: "((diego_bbs_client.private_key))"
+        policy_server:
+          server_ca_cert: "((copilot_network_policy_client.ca))"
+          client_cert: "((copilot_network_policy_client.certificate))"
+          client_key: "((copilot_network_policy_client.private_key))"
 
 - type: replace
   path: /instance_groups/name=istio-router?
@@ -59,14 +63,14 @@
       properties: {}
     - name: silk-daemon
       properties:
-        ca_cert: ((silk_ca.certificate))
+        ca_cert: ((silk_daemon.ca))
         client_cert: ((silk_daemon.certificate))
         client_key: ((silk_daemon.private_key))
         single_ip_only: true
       release: silk
 
 - type: replace
-  path: /variables?/-
+  path: /variables?/name=copilot?
   value:
     name: copilot
     type: certificate
@@ -77,7 +81,7 @@
       - server_auth
 
 - type: replace
-  path: /variables?/-
+  path: /variables?/name=pilot?
   value:
     name: pilot
     type: certificate
@@ -86,6 +90,17 @@
       common_name: pilot.service.cf.internal
       extended_key_usage:
       - client_auth
+
+- type: replace
+  path: /variables?/name=copilot_network_policy_client?
+  value:
+    name: copilot_network_policy_client
+    type: certificate
+    options:
+      ca: network_policy_ca
+      common_name: clientName
+      extended_key_usage:
+        - client_auth
 
 - type: replace
   path: /addons/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties/aliases/-
@@ -127,7 +142,7 @@
     temporary_istio_domains:
     - "istio.((system_domain))"
 - type: replace
-  path: /variables/-
+  path: /variables/name=copilot_client?
   value:
     name: copilot_client
     options:
