@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+
+: "${1?"Usage: ./make-istio-config-for-route <app-name> <full-route>"}"
+: "${2?"Usage: ./make-istio-config-for-route <app-name> <full-route>"}"
+
+APP_NAME=$1
+ROUTE=$2 # example: amelia.istio.chicago.routing.cf-app.com
+HOSTNAME=$(echo $ROUTE | cut -d. -f1)
+APP_PORT=8080
+APP_GUID=$(cf app $APP_NAME --guid) # "c961634e-a799-4a35-8354-ff40a53c0003"
+DIEGO_CELL_IP=$(cf ssh $APP_NAME -c "env | grep CF_INSTANCE_IP" | cut -d= -f2)   #"10.0.1.25"
+DIEGO_CELL_PORT=$(cf ssh $APP_NAME -c "env | grep CF_INSTANCE_PORT | grep -v CF_INSTANCE_PORTS" | cut -d= -f2)   #61000
+
+cat > "/tmp/${HOSTNAME}-virtual-service.yml" <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: copilot-service-for-${ROUTE}
+spec:
+  hosts:
+  - ${ROUTE}
+  gateways:
+  - cloudfoundry-ingress
+  http:
+  - route:
+    - destination:
+        host: ${ROUTE}
+        subset: ${APP_GUID}
+        port:
+          number: ${APP_PORT}
+      weight: 100
+EOF
+
+echo "Generated /tmp/${HOSTNAME}-virtual-service.yml"
+
+cat > "/tmp/${HOSTNAME}-service-entry.yml" <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+ name: copilot-service-entry-for-${ROUTE}
+spec:
+ hosts:
+   - ${ROUTE}
+ location: MESH_INTERNAL
+ ports:
+   - number: ${APP_PORT}
+     name: http
+     protocol: http
+ resolution: STATIC
+ endpoints:
+   - address: ${DIEGO_CELL_IP}
+     ports:
+       http: ${DIEGO_CELL_PORT}
+     labels:
+       cfapp: ${APP_GUID}
+EOF
+echo "Generated /tmp/${HOSTNAME}-service-entry.yml"
+
+cat > "/tmp/${HOSTNAME}-destination-rule.yml" <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: copilot-rule-for-${ROUTE}
+spec:
+  host: ${ROUTE}
+  subsets:
+  - name: ${APP_GUID}
+    labels:
+      cfapp: ${APP_GUID}
+EOF
+echo "Generated /tmp/${HOSTNAME}-destination-rule.yml"
+echo ""
+echo "Now run: ./set-galley-config update /tmp/${HOSTNAME}-virtual-service.yml && ./set-galley-config  update /tmp/${HOSTNAME}-service-entry.yml && ./set-galley-config update /tmp/${HOSTNAME}-destination-rule.yml"
