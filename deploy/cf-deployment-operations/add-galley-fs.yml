@@ -1,0 +1,20 @@
+---
+- type: replace
+  path: /instance_groups/name=istio-control?/jobs/name=galley-fs?
+  value:
+    name: galley-fs
+    release: istio
+
+
+
+- type: replace
+  path: /addons/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties/aliases/domain=galley.service.cf.internal?
+  value:
+    domain: galley.service.cf.internal
+    targets:
+    - deployment: cf
+      domain: bosh
+      instance_group: istio-control
+      network: default
+      query: "*"
+
