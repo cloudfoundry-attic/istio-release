@@ -48,7 +48,6 @@ properties:
     description: "The dns address that Pilot MCP client will connect to, to retrieve route info"
     default: copilot.service.cf.internal
 
-
   pilot_client_ca_cert:
     description: "PEM-encoded CA certificate that signed the client cert used by Pilot platform adapter"
 
