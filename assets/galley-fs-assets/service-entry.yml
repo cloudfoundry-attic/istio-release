@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+ name: copilot-service-entry-for-bark.istio.chicago.routing.cf-app.com
+spec:
+ hosts:
+   - bark.istio.chicago.routing.cf-app.com
+ location: MESH_INTERNAL
+ ports:
+   - number: 8080
+     name: http
+     protocol: http
+ resolution: STATIC
+ endpoints:
+   - address: 10.0.1.25
+     ports:
+       http: 61000
+     labels:
+       cfapp: c961634e-a799-4a35-8354-ff40a53c0003

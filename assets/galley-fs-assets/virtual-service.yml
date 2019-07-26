@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: copilot-service-for-bark.istio.chicago.routing.cf-app.com
+spec:
+  hosts:
+  - bark.istio.chicago.routing.cf-app.com
+  gateways:
+  - cloudfoundry-ingress
+  http:
+  - route:
+    - destination:
+        host: bark.istio.chicago.routing.cf-app.com
+        subset: c961634e-a799-4a35-8354-ff40a53c0003
+        port:
+          number: 8080
+      weight: 100

@@ -1,0 +1,10 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: copilot-rule-for-bark.istio.chicago.routing.cf-app.com
+spec:
+  host: bark.istio.chicago.routing.cf-app.com
+  subsets:
+  - name: c961634e-a799-4a35-8354-ff40a53c0003
+    labels:
+      cfapp: c961634e-a799-4a35-8354-ff40a53c0003
