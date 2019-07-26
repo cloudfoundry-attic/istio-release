@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+: "${1?"Usage: ./set-galley-config <update || burn-it-down> [options]"}"
+CLI_COMMAND=$1
+
+if [[ $CLI_COMMAND == "update" ]] ; then
+  : "${2?"Usage: ./set-galley-config update <path-of-file-to-upload>"}"
+  FILEPATH_TO_UPLOAD=$2
+  FILE_BASENAME=$(basename $FILEPATH_TO_UPLOAD)
+
+  bosh scp $FILEPATH_TO_UPLOAD istio-control:/tmp/$FILE_BASENAME;
+  bosh ssh istio-control -c "sudo mv /tmp/$FILE_BASENAME /var/vcap/data/istio-config/$FILE_BASENAME"
+
+elif [[ $CLI_COMMAND == "burn-it-down" ]] ; then
+  bosh ssh istio-control -c "sudo rm -f /var/vcap/data/istio-config/*"
+
+else
+  echo "'$1' is not a valid command. Did you mean 'update'?"
+  echo "Usage: ./set-galley-config <update || burn-it-down> [options]"
+fi
