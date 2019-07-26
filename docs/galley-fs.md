@@ -24,11 +24,11 @@ If you don't have istio deployed already, then you can use the [`add-istio.yml` 
 #### Upload the config files one by one
 
 ```
-./set-galley-config update /tmp/amelia-service-entry.yml
+./set-galley-config update <istio-config-filepath>
 ```
 
 #### Burn it down :fire:
 This deletes all configuration for galley
 ```
-./set-galley-config burn-it-down /tmp/amelia-service-entry.yml
+./set-galley-config burn-it-down
 ```
