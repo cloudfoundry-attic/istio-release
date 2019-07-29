@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: copilot-rule-for-flake.istio.dream.routing.cf-app.com
+spec:
+  host: flake.istio.dream.routing.cf-app.com
+  subsets:
+  - name: 32fba09f-8298-4351-bf56-8f2280af51ac
+    labels:
+      cfapp: 32fba09f-8298-4351-bf56-8f2280af51ac
+  - name: 0dc360c7-b95b-4131-9155-0d94a59fcf00
+    labels:
+      cfapp: 0dc360c7-b95b-4131-9155-0d94a59fcf00

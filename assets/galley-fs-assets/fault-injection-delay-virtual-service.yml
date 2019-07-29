@@ -1,0 +1,22 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: copilot-service-for-flake.istio.dream.routing.cf-app.com
+spec:
+  hosts:
+  - flake.istio.dream.routing.cf-app.com
+  gateways:
+  - cloudfoundry-ingress
+  http:
+  - route:
+    - destination:
+        host: flake.istio.dream.routing.cf-app.com
+        subset: 0dc360c7-b95b-4131-9155-0d94a59fcf00
+        port:
+          number: 8080
+      weight: 100
+    fault:
+      delay:
+        percentage:
+          value: 50
+        fixedDelay: 3s
