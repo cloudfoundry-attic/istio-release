@@ -3,7 +3,7 @@
 This repo is a [BOSH release](https://github.com/cloudfoundry/bosh) that
 packages [Istio](https://istio.io/) and [Envoy](https://github.com/envoyproxy/envoy) for support of Service Mesh use cases in Cloud Foundry.
 
-> **Note:** This release is under heavy development and not yet ready for use.
+> **Note:** This release is beta and not ready for use. Development on this release has been postponed. 
 
 ## Getting Help
 
