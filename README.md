@@ -10,27 +10,7 @@ packages [Istio](https://istio.io/) and [Envoy](https://github.com/envoyproxy/en
 For help or questions with this release or any of its submodules, you can reach the maintainers on Slack at [cloudfoundry.slack.com](https://cloudfoundry.slack.com) in the `#networking` channel.
 
 ## Deployment
-
-### Setup a `cf-deployment` environment with `istio-release`
-[cf-deployment-concourse-tasks](https://github.com/cloudfoundry/cf-deployment-concourse-tasks) v6
-- GCP only for right now
-- configure the `bbl-up` task with our custom [bbl-config](deploy/bbl-config) to deploy dedicated load balancers for the new Istio ingress routers
-- configure `bosh-deploy` task with our custom [operations file](deploy/cf-deployment-operations)
-
-### Deploy with bosh cli
-
-This assumes you have already paved your infrastructure, e.g. BBLv6 with [our patches](deploy/bbl-config).
-
-```
-git clone https://github.com/cloudfoundry-incubator/istio-release
-
-cd istio-release/
-./scripts/update
-
-bosh create-release && bosh upload-release
-
-bosh deploy cf.yml -o deploy/cf-deployment-operations/add-istio.yml
-```
+Follow these [steps](https://docs.cloudfoundry.org/running/deploying-service-mesh.html) to deploy the istio routing tier with your Cloud Foundry
 
 ## Contributing to istio-release
 Please follow our [Code of Conduct](https://www.cloudfoundry.org/code-of-conduct/).
