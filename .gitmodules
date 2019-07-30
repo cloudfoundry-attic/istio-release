@@ -4,3 +4,12 @@
 [submodule "src/istio.io/istio"]
 	path = src/istio.io/istio
 	url = https://github.com/cloudfoundry/istio
+[submodule "src/code.cloudfoundry.org/policy_client"]
+	path = src/code.cloudfoundry.org/policy_client
+	url = https://github.com/cloudfoundry/policy_client
+[submodule "src/code.cloudfoundry.org/lager"]
+	path = src/code.cloudfoundry.org/lager
+	url = https://github.com/cloudfoundry/lager
+[submodule "src/code.cloudfoundry.org/cf-networking-helpers"]
+	path = src/code.cloudfoundry.org/cf-networking-helpers
+	url = https://github.com/cloudfoundry/cf-networking-helpers
