@@ -239,7 +239,6 @@ jobs:
       OPS_FILES: |
         use-compiled-releases.yml
         enable-service-discovery.yml
-        enable-routing-integrity.yml
         use-latest-capi-release.yml
         use-latest-silk-release.yml
         use-latest-mysql-release.yml
