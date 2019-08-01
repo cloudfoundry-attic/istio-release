@@ -3,4 +3,4 @@
 	url = https://github.com/cloudfoundry/copilot
 [submodule "src/istio.io/istio"]
 	path = src/istio.io/istio
-	url = https://github.com/cloudfoundry/istio
+	url = https://github.com/istio/istio
