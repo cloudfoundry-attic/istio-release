@@ -42,5 +42,9 @@
     "MaxIdleConnsPerHost": <%= p('bbs.max_idle_conns_per_host') %>,
     "SyncInterval": "<%= p('bbs.sync_interval') %>"
   },
-  "TLSPems": <%= create_keypairs(p('frontend_tls_keypairs')) %>
+  "TLSPems": <%= create_keypairs(p('frontend_tls_keypairs')) %>,
+  "PolicyServerAddress": "<%= p('policy_server.address') %>",
+  "PolicyServerClientCertPath": "/var/vcap/jobs/copilot/config/policy-server/certs/client.crt",
+  "PolicyServerClientKeyPath": "/var/vcap/jobs/copilot/config/policy-server/certs/client.key",
+  "PolicyServerCAPath": "/var/vcap/jobs/copilot/config/policy-server/certs/ca.crt"
 }

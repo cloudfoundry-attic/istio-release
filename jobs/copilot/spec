@@ -94,6 +94,10 @@ properties:
     description: "Maximum number of idle http connections"
     default: 0
 
+  policy_server.address:
+    description: "Address of the internal policy server API."
+    default: "https://policy-server.service.cf.internal:4003"
+
   policy_server.server_ca_cert:
     description: "Trusted CA certificate that was used to sign the policy server's server cert and key."
 
