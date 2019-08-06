@@ -7,16 +7,16 @@ image_resource:
     repository: cfrouting/cf-routing-webdriver
 
 inputs:
-  - name: istio-release
+  - name: istio-release-ci
+  - name: deployments-routing
   - name: istio-acceptance-tests
-  - name: deployments-repo
 
 run:
-  path: istio-release/ci/tasks/run-iats/task
+  path: istio-release-ci/ci/tasks/run-iats/task
 
 params:
   CF_LOGIN_DOMAIN:
-  API_DOMAIN: bosh-lite.com
+  API_DOMAIN:
   VARS_LOCATION:
   CF_ADMIN_USER: admin
   INTERNAL_DOMAIN: apps.internal
@@ -25,4 +25,3 @@ params:
   RATINGS_DOCKER_REPO: istio/examples-bookinfo-ratings-v1:1.8.0
   DETAILS_DOCKER_REPO: istio/examples-bookinfo-details-v1:1.8.0
   NODES: 7
-  INCLUDE_INTERNAL_ROUTES_TESTS: false

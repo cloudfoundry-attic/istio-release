@@ -7,12 +7,12 @@ image_resource:
     repository: cfrouting/cf-routing-webdriver
 
 inputs:
-  - name: istio-release
+  - name: istio-release-ci
+  - name: deployments-routing
   - name: istio-scaling
-  - name: deployments-repo
 
 run:
-  path: istio-release/ci/tasks/run-istio-scaling/task
+  path: istio-release-ci/ci/tasks/run-istio-scaling/task
 
 params:
   DEPLOYMENT_NAME:
@@ -20,5 +20,5 @@ params:
   SYSTEM_DOMAIN:
   NUMBER_OF_APPS:
   PASSING_THRESHOLD:
+  DATADOG_API_KEY:
   CLEANUP_ORG:
-  APP_MEM_SIZE: 16M

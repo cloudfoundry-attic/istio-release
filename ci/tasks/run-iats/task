@@ -26,8 +26,7 @@ pushd "${gopath_dir}/istio-acceptance-tests"
   "reviews_docker_tag": "${REVIEWS_DOCKER_REPO}",
   "ratings_docker_tag": "${RATINGS_DOCKER_REPO}",
   "details_docker_tag": "${DETAILS_DOCKER_REPO}",
-  "wildcard_ca": ${wildcard_ca},
-  "include_internal_route_tests": ${INCLUDE_INTERNAL_ROUTES_TESTS}
+  "wildcard_ca": ${wildcard_ca}
 }
 EOF
 

@@ -1,0 +1,1131 @@
+groups:
+- name: istio
+  jobs:
+  - copilot-test
+  - upgrade-go1.x-in-istio-release
+  - update-envoy-blob
+  - update-grpcurl-blob
+  - istio-release-test
+  - istio-dev-deploy-cf
+  - run-iats-dev
+  - run-scaling
+  - run-sits
+  - run-cats
+  - istio-acceptance-deploy-cf
+  - run-iats-acceptance
+  - build-istio-release-notes
+  - bump-patch-and-create-final-release
+  - bump-minor-and-create-final-release
+  - bump-major-and-create-final-release
+  - merge-master-into-develop
+- name: maintenance
+  jobs:
+  - istio-dev-setup
+  - isitio-dev-bbl-destroy
+  - istio-dev-bosh-cleanup
+  - istio-acceptance-setup
+  - istio-acceptance-bosh-cleanup
+  - istio-upstream-setup
+  - isitio-upstream-bbl-destroy
+  - istio-upstream-bosh-cleanup
+  - istio-acceptance-delete-deployment
+  - istio-dev-delete-deployment
+  - istio-upstream-delete-deployment
+- name: istio-source
+  jobs:
+  - update-istio-submodule
+  - istio-upstream-test
+  - istio-upstream-release-test
+  - istio-upstream-deploy-cf
+  - run-iats-upstream
+  - merge-istio-release-upstream-untested
+
+resource_types:
+- name: tracker-resource
+  type: docker-image
+  source:
+    repository: concourse/tracker-resource
+
+resources:
+- name: final-version
+  type: semver
+  source:
+    uri: git@github.com:cloudfoundry/istio-release.git
+    branch: develop
+    file: .final_builds/version
+    driver: git
+    private_key: ((github_private_key.private_key))
+    git_user: CI Bot <cf-networking@pivotal.io>
+
+- name: cf-deployment-concourse-tasks
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-deployment-concourse-tasks
+    tag_filter: v*
+
+- name: cf-acceptance-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-acceptance-tests
+
+- name: cf-deployment
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+
+- name: deployments-routing
+  type: git
+  source:
+    branch: master
+    private_key: ((github_private_key.private_key))
+    uri: git@github.com:cloudfoundry/deployments-routing.git
+
+- name: copilot
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/copilot
+
+- name: istio-release-ci
+  type: git
+  source:
+    branch: develop
+    uri: git@github.com:cloudfoundry/istio-release.git
+    private_key: ((github_private_key.private_key))
+    paths:
+      - ci
+
+- name: istio-release
+  type: git
+  source:
+    branch: develop
+    uri: git@github.com:cloudfoundry/istio-release.git
+    rebase: true
+    private_key: ((github_private_key.private_key))
+
+- name: istio-release-master
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/istio-release.git
+    rebase: true
+    private_key: ((github_private_key.private_key))
+
+- name: istio-release-upstream-untested
+  type: git
+  source:
+    branch: upstream-untested
+    uri: git@github.com:cloudfoundry/istio-release.git
+    rebase: true
+    private_key: ((github_private_key.private_key))
+
+- name: istio-source
+  type: git
+  source:
+    branch: master # change back to release branch when our PR is released: https://github.com/istio/istio/pull/15473
+    uri: https://github.com/istio/istio
+
+- name: istio-acceptance-tests
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/istio-acceptance-tests.git
+    private_key: ((github_private_key.private_key))
+
+- name: istio-scaling
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:cloudfoundry/istio-scaling.git
+    private_key: ((github_private_key.private_key))
+
+- name: sync-integration-tests
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/sync-integration-tests.git
+
+- name: golang-release-latest
+  type: git
+  source:
+    branch: master
+    tag_filter: v*
+    uri: https://github.com/bosh-packages/golang-release.git
+
+- name: envoy-semver-v1.9.0
+  type: git
+  source:
+    branch: master
+    tag_filter: v1.9.0
+    uri: https://github.com/envoyproxy/envoy
+
+- name: grpcurl-source
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/fullstorydev/grpcurl.git
+
+# please DO NOT rename the branch here without changing the name of the resource
+- name: capi-develop
+  type: git
+  source:
+    branch: develop
+    uri: https://github.com/cloudfoundry/capi-release
+
+- name: latest-silk
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/silk-release
+    branch: release-candidate
+    ignore_paths:
+      - docs
+
+# APP INTEGRATIONS
+- name: tracker-routing
+  type: tracker-resource
+  source:
+    tracker_url: https://www.pivotaltracker.com
+    project_id: "1358110"
+    token: ((tracker_api_token))
+
+jobs:
+- name: copilot-test
+  plan:
+  - get: copilot
+    trigger: true
+  - task: test
+    file: copilot/ci/test.yml
+
+- name: upgrade-go1.x-in-istio-release
+  plan:
+  - in_parallel:
+    - get: istio-release
+    - get: golang-release-latest
+      trigger: true
+    - get: istio-release-ci
+    - get: deployments-routing
+  - task: upgrade-go1.x-in-istio-release
+    file: istio-release-ci/ci/tasks/upgrade-package-in-release/task.yml
+    params:
+      RELEASE: release
+      PACKAGE: golang-1-linux
+      BRANCH: develop
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_istio_blobstore_service_account_key))
+    input_mapping:
+      release: istio-release
+      package-release: golang-release-latest
+  - task: save-golang-version-to-file
+    file: istio-release-ci/ci/tasks/save-golang-version-to-file/task.yml
+    params:
+      BRANCH: develop
+    input_mapping:
+      release: modified-release
+  - put: istio-release
+    params:
+      repository: modified-release
+
+- name: update-envoy-blob
+  plan:
+  - in_parallel:
+    - get: istio-release-ci
+    - get: istio-release
+    - get: envoy-source
+      resource: envoy-semver-v1.9.0
+      trigger: true
+  - task: pull-envoy-image
+    privileged: true  # see: https://github.com/concourse/docker-image-resource/issues/164
+    file: istio-release-ci/ci/tasks/envoy-blob/pull-from-docker/task.yml
+  - task: update-envoy-blob
+    file: istio-release-ci/ci/tasks/envoy-blob/update/task.yml
+    params:
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_istio_blobstore_service_account_key))
+  - put: istio-release
+    params:
+      repository: updated-istio-release
+      rebase: true
+
+- name: update-grpcurl-blob
+  plan:
+  - in_parallel:
+    - get: istio-release-ci
+    - get: istio-release
+    - get: grpcurl-source
+  - task: compile-grpcurl
+    file: istio-release-ci/ci/tasks/grpcurl-blob/compile/task.yml
+  - task: update-grpcurl-blob
+    file: istio-release-ci/ci/tasks/grpcurl-blob/update/task.yml
+    params:
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_istio_blobstore_service_account_key))
+  - put: istio-release
+    params:
+      repository: updated-istio-release
+      rebase: true
+
+- name: istio-upstream-setup
+  serial_groups: [istio-upstream]
+  plan:
+  - in_parallel:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: istio-release-ci
+    - get: istio-release
+  - task: merge-bbl-config
+    file: istio-release-ci/ci/tasks/merge-bbl-config/task.yml
+    input_mapping:
+      source1: istio-release-ci
+      source2: istio-release
+      source3: deployments-routing
+    params:
+      SOURCE1_DIR: ci/tasks/bbl-configs/add-parent-dns-full
+      SOURCE2_DIR: deploy/bbl-config
+      SOURCE3_DIR: datadog-config
+  - task: bbl-up
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      bbl-config: merged-bbl-config
+    params:
+      BBL_IAAS: gcp
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_GCP_REGION: us-west1
+      BBL_LB_CERT: ../lb_certs/lb.crt
+      BBL_LB_KEY: ../lb_certs/lb.key
+      LB_DOMAIN: istio-upstream.routing.cf-app.com
+      BBL_ENV_NAME: istio-upstream
+      BBL_STATE_DIR: istio-upstream/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      BBL_CONFIG_DIR: "."
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: isitio-upstream-bbl-destroy
+  serial_groups: [istio-upstream]
+  build_logs_to_retain: 100
+  plan:
+  - in_parallel:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+  - task: destroy-istio-upstream
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_STATE_DIR: istio-upstream/bbl-state
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-state: deployments-routing
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: istio-upstream-bosh-cleanup
+  serial_groups: [istio-upstream]
+  build_logs_to_retain: 100
+  plan:
+  - get: deployments-routing
+  - get: cf-deployment-concourse-tasks
+  - task: cleanup-artifacts
+    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+    params:
+      BBL_STATE_DIR: istio-upstream/bbl-state
+    input_mapping:
+      bbl-state: deployments-routing
+
+- name: istio-acceptance-delete-deployment
+  serial_groups: [istio-acceptance]
+  build_logs_to_retain: 100
+  plan:
+  - in_parallel:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    params:
+      BBL_STATE_DIR: istio-acceptance/bbl-state
+      DEPLOYMENT_NAME: cf
+    input_mapping:
+      bbl-state: deployments-routing
+
+- name: istio-dev-delete-deployment
+  serial_groups: [istio-dev]
+  build_logs_to_retain: 100
+  plan:
+  - in_parallel:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    params:
+      BBL_STATE_DIR: istio-dev/bbl-state
+      DEPLOYMENT_NAME: cf
+    input_mapping:
+      bbl-state: deployments-routing
+
+- name: istio-upstream-delete-deployment
+  serial_groups: [istio-upstream]
+  build_logs_to_retain: 100
+  plan:
+  - in_parallel:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+  - task: delete-cf-deployment
+    file: cf-deployment-concourse-tasks/bosh-delete-deployment/task.yml
+    params:
+      BBL_STATE_DIR: istio-upstream/bbl-state
+      DEPLOYMENT_NAME: cf
+    input_mapping:
+      bbl-state: deployments-routing
+
+- name: istio-dev-setup
+  serial_groups:
+  - istio-dev
+  plan:
+  - in_parallel:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: istio-release-ci
+    - get: istio-release
+  - task: merge-bbl-config
+    file: istio-release-ci/ci/tasks/merge-bbl-config/task.yml
+    input_mapping:
+      source1: istio-release-ci
+      source2: istio-release
+      source3: deployments-routing
+    params:
+      SOURCE1_DIR: ci/tasks/bbl-configs/add-parent-dns-full
+      SOURCE2_DIR: deploy/bbl-config
+      SOURCE3_DIR: datadog-config
+  - task: bbl-up
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+      bbl-config: merged-bbl-config
+    params:
+      BBL_IAAS: gcp
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      BBL_GCP_REGION: us-west1
+      BBL_LB_CERT: ../lb_certs/lb.crt
+      BBL_LB_KEY: ../lb_certs/lb.key
+      LB_DOMAIN: istio-dev.routing.cf-app.com
+      BBL_ENV_NAME: istio-dev
+      BBL_STATE_DIR: istio-dev/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      BBL_CONFIG_DIR: "."
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: isitio-dev-bbl-destroy
+  serial_groups: [istio-dev]
+  build_logs_to_retain: 100
+  plan:
+  - in_parallel:
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+  - task: destroy-istio-dev
+    file: cf-deployment-concourse-tasks/bbl-destroy/task.yml
+    params:
+      BBL_STATE_DIR: istio-dev/bbl-state
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+    input_mapping:
+      bbl-state: deployments-routing
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: istio-acceptance-setup
+  serial_groups:
+  - istio-acceptance
+  plan:
+  - in_parallel:
+    - get: cf-deployment-concourse-tasks
+    - get: deployments-routing
+    - get: istio-release-ci
+    - get: istio-release
+  - task: merge-bbl-config
+    file: istio-release-ci/ci/tasks/merge-bbl-config/task.yml
+    input_mapping:
+      source1: istio-release-ci
+      source2: istio-release
+      source3: deployments-routing
+    params:
+      SOURCE1_DIR: ci/tasks/bbl-configs/add-parent-dns-full
+      SOURCE2_DIR: deploy/bbl-config
+      SOURCE3_DIR: datadog-config
+  - task: bbl-up
+    file: cf-deployment-concourse-tasks/bbl-up/task.yml
+    params:
+      BBL_IAAS: gcp
+      BBL_GCP_SERVICE_ACCOUNT_KEY: ((shared_gcp_account_creds))  # will change when upgrading to latest cf-deployment-concourse-tasks
+      BBL_GCP_PROJECT_ID: cf-routing
+      BBL_GCP_REGION: us-west1
+      BBL_GCP_ZONE: us-west1-b
+      BBL_LB_CERT: ../lb_certs/lb.crt
+      BBL_LB_KEY: ../lb_certs/lb.key
+      LB_DOMAIN: istio-acceptance.routing.cf-app.com
+      BBL_ENV_NAME: istio-acceptance
+      BBL_STATE_DIR: istio-acceptance/bbl-state
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+      BBL_CONFIG_DIR: "."
+    input_mapping:
+      bbl-state: deployments-routing
+      bbl-config: merged-bbl-config
+    ensure:
+      put: deployments-routing
+      params:
+        repository: updated-bbl-state
+        rebase: true
+
+- name: istio-dev-bosh-cleanup
+  serial_groups: [istio-dev]
+  build_logs_to_retain: 100
+  plan:
+  - get: deployments-routing
+  - get: cf-deployment-concourse-tasks
+  - task: cleanup-artifacts
+    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+    params:
+      BBL_STATE_DIR: istio-dev/bbl-state
+    input_mapping:
+      bbl-state: deployments-routing
+
+- name: istio-acceptance-bosh-cleanup
+  serial_groups: [istio-acceptance]
+  build_logs_to_retain: 100
+  plan:
+  - get: deployments-routing
+  - get: cf-deployment-concourse-tasks
+  - task: cleanup-artifacts
+    file: cf-deployment-concourse-tasks/bosh-cleanup/task.yml
+    params:
+      BBL_STATE_DIR: istio-acceptance/bbl-state
+    input_mapping:
+      bbl-state: deployments-routing
+
+- name: update-istio-submodule
+  plan:
+  - in_parallel:
+    - get: istio-source
+    - get: istio-release
+    - get: istio-release-upstream-untested
+    - get: istio-release-ci
+  - task: update-submodule
+    input_mapping:
+      submodule-latest: istio-source
+      needs-bump: istio-release
+    file: istio-release-ci/ci/tasks/bump-submodule/task.yml
+    params:
+      SUBMODULE_PATH: src/istio.io/istio
+      BRANCH: develop
+  - put: istio-release-upstream-untested
+    params:
+      repository: bumped
+      force: true
+
+- name: istio-upstream-test
+  serial_groups: [istio-upstream]
+  plan:
+  - in_parallel:
+    - get: istio-source
+      trigger: true
+      passed: [update-istio-submodule]
+    - get: istio-release-upstream-untested
+      trigger: true
+      passed: [update-istio-submodule]
+    - get: istio-release-ci
+  - task: get-other-submodules
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      inputs:
+      - name: istio-release-upstream-untested
+      outputs:
+      - name: bumped-with-submodules
+      run:
+        path: bash
+        args:
+          - -exc
+          - |
+            git clone istio-release-upstream-untested bumped-with-submodules
+            cd bumped-with-submodules
+            git submodule update --init --recursive
+  - task: test
+    privileged: true
+    file: istio-release-upstream-untested/ci/istio-upstream-tests.yml
+    input_mapping:
+      istio-release: bumped-with-submodules
+
+- name: istio-upstream-release-test
+  plan:
+  - get: istio-release-upstream-untested
+    passed: [istio-upstream-test]
+    trigger: true
+  - task: test
+    privileged: true
+    file: istio-release-upstream-untested/ci/tasks/istio-release-tests/task.yml
+    input_mapping:
+      istio-release: istio-release-upstream-untested
+
+- name: istio-upstream-deploy-cf
+  serial_groups: [istio-upstream]
+  plan:
+  - in_parallel:
+    - get: istio-release-upstream-untested
+      passed: [istio-upstream-release-test]
+      trigger: true
+    - get: istio-release-ci
+    - get: latest-silk
+      trigger: true
+    - get: cf-deployment-concourse-tasks
+    - get: capi-develop
+    - get: cf-deployment
+      trigger: true
+    - get: deployments-routing
+  - task: merge-ops-files
+    file: istio-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: istio-release-upstream-untested
+    params:
+      ENVIRONMENT: istio-upstream
+      SOURCE1_DIR: deploy/cf-deployment-operations
+  - task: upload-stemcell
+    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      BBL_STATE_DIR: istio-upstream/bbl-state
+  - task: create-capi-release-with-copilot
+    file: istio-release-ci/ci/tasks/create-release-tarball/task.yml
+    input_mapping:
+      release-dir: capi-develop
+  - task: upload-capi-release-with-copilot
+    file: istio-release-ci/ci/tasks/bosh2-command/task-with-release.yml
+    params:
+      ENVIRONMENT: istio-upstream
+      COMMAND: "upload-release ./release/*.tgz"
+    input_mapping:
+      release: release-tarball
+  - task: create-latest-silk-release
+    file: istio-release-ci/ci/tasks/create-release-tarball/task.yml
+    input_mapping:
+      release-dir: latest-silk
+  - task: upload-latest-silk-release
+    file: istio-release-ci/ci/tasks/bosh2-command/task-with-release.yml
+    params:
+      ENVIRONMENT: istio-upstream
+      COMMAND: "upload-release ./release/*.tgz"
+    input_mapping:
+      release: release-tarball
+  - task: deploy-cf-with-created-istio-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    params:
+      BBL_STATE_DIR: istio-upstream/bbl-state
+      OPS_FILES: |
+        use-compiled-releases.yml
+        enable-service-discovery.yml
+        use-latest-capi-release.yml
+        use-latest-silk-release.yml
+        add-istio.yml
+        enable-sidecar-proxying.yml
+        disable-ingress-sidecar-proxying.yml
+        add-external-istio-lb.yml
+        enable-tls-termination.yml
+        add-datadog-firehose-nozzle.yml
+      SYSTEM_DOMAIN: istio-upstream.routing.cf-app.com
+    input_mapping:
+      bbl-state: deployments-routing
+      vars-store: deployments-routing
+      vars-files: deployments-routing
+      ops-files: merged-operations
+      release: istio-release-upstream-untested
+
+- name: run-iats-upstream
+  serial_groups: [istio-upstream]
+  plan:
+  - in_parallel:
+    - get: istio-release-upstream-untested
+      trigger: true
+      passed:
+      - istio-upstream-deploy-cf
+    - get: istio-release-ci
+    - get: latest-silk
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: deployments-routing
+    - get: istio-acceptance-tests
+  - task: run-iats
+    file: istio-release-ci/ci/tasks/run-iats/task.yml
+    params:
+      VARS_LOCATION: deployments-routing/istio-upstream/bbl-state
+      CF_LOGIN_DOMAIN: istio-upstream.routing.cf-app.com
+      API_DOMAIN: istio.istio-upstream.routing.cf-app.com
+
+- name: merge-istio-release-upstream-untested
+  serial_groups: [istio-upstream]
+  plan:
+  - in_parallel:
+    - get: istio-release-upstream-untested
+      trigger: true
+      passed:
+      - run-iats-upstream
+    - get: istio-release
+  - put: istio-release
+    params:
+      repository: istio-release-upstream-untested
+
+- name: istio-release-test
+  plan:
+  - in_parallel:
+    - get: istio-release
+      trigger: true
+  - task: test
+    privileged: true
+    file: istio-release/ci/tasks/istio-release-tests/task.yml
+
+- name: istio-dev-deploy-cf
+  serial_groups:
+  - istio-dev
+  plan:
+  - in_parallel:
+    - get: istio-release
+      passed: [ istio-release-test ]
+      trigger: true
+    - get: istio-release-ci
+    - get: latest-silk
+      trigger: true
+    - get: cf-deployment-concourse-tasks
+    - get: capi-develop
+    - get: cf-deployment
+      trigger: true
+    - get: deployments-routing
+  - task: merge-ops-files
+    file: istio-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: istio-release
+    params:
+      ENVIRONMENT: istio-dev
+      SOURCE1_DIR: deploy/cf-deployment-operations
+  - task: upload-stemcell
+    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      BBL_STATE_DIR: istio-dev/bbl-state
+  - task: create-capi-release-with-copilot
+    file: istio-release-ci/ci/tasks/create-release-tarball/task.yml
+    input_mapping:
+      release-dir: capi-develop
+  - task: upload-capi-release-with-copilot
+    file: istio-release-ci/ci/tasks/bosh2-command/task-with-release.yml
+    params:
+      ENVIRONMENT: istio-dev
+      COMMAND: "upload-release ./release/*.tgz"
+    input_mapping:
+      release: release-tarball
+  - task: create-latest-silk-release
+    file: istio-release-ci/ci/tasks/create-release-tarball/task.yml
+    input_mapping:
+      release-dir: latest-silk
+  - task: upload-latest-silk-release
+    file: istio-release-ci/ci/tasks/bosh2-command/task-with-release.yml
+    params:
+      ENVIRONMENT: istio-dev
+      COMMAND: "upload-release ./release/*.tgz"
+    input_mapping:
+      release: release-tarball
+  - task: deploy-cf-with-created-istio-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    params:
+      BBL_STATE_DIR: istio-dev/bbl-state
+      OPS_FILES: |
+        use-compiled-releases.yml
+        enable-service-discovery.yml
+        use-latest-capi-release.yml
+        use-latest-silk-release.yml
+        add-istio.yml
+        enable-sidecar-proxying.yml
+        disable-ingress-sidecar-proxying.yml
+        add-external-istio-lb.yml
+        enable-tls-termination.yml
+        add-datadog-firehose-nozzle.yml
+        add-lb-ca.yml
+      SYSTEM_DOMAIN: istio-dev.routing.cf-app.com
+    input_mapping:
+      bbl-state: deployments-routing
+      vars-store: deployments-routing
+      vars-files: deployments-routing
+      ops-files: merged-operations
+      release: istio-release
+
+- name: run-iats-dev
+  serial_groups:
+  - istio-dev
+  plan:
+  - in_parallel:
+    - get: istio-release
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: istio-release-ci
+    - get: latest-silk
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: deployments-routing
+    - get: istio-acceptance-tests
+  - task: run-iats
+    file: istio-release-ci/ci/tasks/run-iats/task.yml
+    params:
+      VARS_LOCATION: deployments-routing/istio-dev/bbl-state
+      CF_LOGIN_DOMAIN: istio-dev.routing.cf-app.com
+      API_DOMAIN: istio.istio-dev.routing.cf-app.com
+
+- name: run-scaling
+  serial_groups:
+  - istio-dev
+  plan:
+  - in_parallel:
+    - get: istio-release
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: istio-release-ci
+    - get: deployments-routing
+    - get: istio-scaling
+  - task: run-scaling
+    file: istio-release-ci/ci/tasks/run-istio-scaling/task.yml
+    params:
+      VARS_LOCATION: deployments-routing/istio-dev/bbl-state
+      SYSTEM_DOMAIN: istio-dev.routing.cf-app.com
+      NUMBER_OF_APPS: 450
+      CLEANUP_ORG: true
+      DEPLOYMENT_NAME: cf
+      PASSING_THRESHOLD: 99.5
+      DATADOG_API_KEY: ((datadog_api_key))
+
+- name: run-sits
+  serial_groups:
+  - istio-dev
+  plan:
+  - in_parallel:
+    - get: istio-release-ci
+    - get: istio-release
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: capi-develop
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: latest-silk
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: deployments-routing
+    - get: sync-integration-tests
+      trigger: true
+  - task: run
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-routing-pipeline
+      inputs:
+      - name: sync-integration-tests
+      - name: deployments-routing
+      - name: istio-release-ci
+      params:
+        BBL_STATE_DIR: deployments-routing/istio-dev/bbl-state
+        CF_SYSTEM_DOMAIN: istio-dev.routing.cf-app.com
+        CF_APPS_DOMAIN: istio.istio-dev.routing.cf-app.com
+        RUN_ROUTING_TESTS: true
+      run:
+        path: bash
+        args:
+          - -exc
+          - |
+            source "${PWD}/deployments-routing/scripts/script_helpers.sh"
+            pushd "${PWD}/deployments-routing/istio-dev"
+            ENV=$(basename "$PWD")
+            bosh_login $ENV
+            popd
+            mkdir -p "${GOPATH}/src/code.cloudfoundry.org"
+            cp -R "${PWD}/sync-integration-tests" "${GOPATH}/src/code.cloudfoundry.org"
+            "${GOPATH}/src/code.cloudfoundry.org/sync-integration-tests/run-against-env.sh"
+
+- name: run-cats
+  serial_groups: [istio-dev]
+  build_logs_to_retain: 100
+  plan:
+  - in_parallel:
+    - get: istio-release-ci
+    - get: cf-acceptance-tests
+    - get: cf-deployment
+      trigger: true
+      passed: [istio-dev-deploy-cf]
+    - get: deployments-routing
+    - get: cf-deployment-concourse-tasks
+    - get: istio-release
+      passed:
+      - run-sits
+      - run-iats-dev
+      - run-scaling
+      trigger: true
+  - task: create-integration-configs
+    file: istio-release-ci/ci/tasks/create-integration-configs/task.yml
+    params:
+      ENVIRONMENT: istio-dev
+  - task: update-integration-configs
+    file: cf-deployment-concourse-tasks/update-integration-configs/task.yml
+    input_mapping:
+      bbl-state: created-integration-configs
+      integration-configs: created-integration-configs
+    params:
+      BBL_STATE_DIR: istio-dev/bbl-state
+      CATS_INTEGRATION_CONFIG_FILE: istio-dev/cats_integration_config.json
+      GIT_COMMIT_EMAIL: cf-routing-eng@pivotal.io
+  - task: run-cats
+    input_mapping:
+      integration-config: updated-integration-configs
+    file: cf-deployment-concourse-tasks/run-cats/task.yml
+    params:
+      CONFIG_FILE_PATH: istio-dev/cats_integration_config.json
+      NODES: 4
+
+- name: istio-acceptance-deploy-cf
+  serial_groups:
+  - istio-acceptance
+  plan:
+  - in_parallel:
+    - get: istio-release
+      trigger: true
+      passed:
+      - run-cats
+    - get: istio-release-ci
+    - get: cf-deployment-concourse-tasks
+    - get: latest-silk
+      trigger: true
+      passed:
+      - run-iats-dev
+      - run-sits
+    - get: capi-develop
+      trigger: true
+      passed:
+        - run-sits
+    - get: cf-deployment
+      trigger: true
+      passed:
+      - istio-dev-deploy-cf
+    - get: deployments-routing
+  - task: merge-ops-files
+    file: istio-release-ci/ci/tasks/merge-ops-files/task.yml
+    input_mapping:
+      source1: istio-release
+    params:
+      ENVIRONMENT: istio-acceptance
+      SOURCE1_DIR: deploy/cf-deployment-operations
+  - task: upload-stemcell
+    file: cf-deployment-concourse-tasks/bosh-upload-stemcell-from-cf-deployment/task.yml
+    input_mapping:
+      bbl-state: deployments-routing
+    params:
+      BBL_STATE_DIR: istio-acceptance/bbl-state
+  - task: create-capi-release-with-copilot
+    file: istio-release-ci/ci/tasks/create-release-tarball/task.yml
+    input_mapping:
+      release-dir: capi-develop
+  - task: upload-capi-release-with-copilot
+    file: istio-release-ci/ci/tasks/bosh2-command/task-with-release.yml
+    params:
+      ENVIRONMENT: istio-acceptance
+      COMMAND: "upload-release ./release/*.tgz"
+    input_mapping:
+      release: release-tarball
+  - task: create-latest-silk-release
+    file: istio-release-ci/ci/tasks/create-release-tarball/task.yml
+    input_mapping:
+      release-dir: latest-silk
+  - task: upload-latest-silk-release
+    file: istio-release-ci/ci/tasks/bosh2-command/task-with-release.yml
+    params:
+      ENVIRONMENT: istio-acceptance
+      COMMAND: "upload-release ./release/*.tgz"
+    input_mapping:
+      release: release-tarball
+  - task: deploy-cf-with-created-istio-release
+    file: cf-deployment-concourse-tasks/bosh-deploy-with-created-release/task.yml
+    params:
+      BBL_STATE_DIR: istio-acceptance/bbl-state
+      OPS_FILES: |
+        use-compiled-releases.yml
+        enable-service-discovery.yml
+        use-latest-capi-release.yml
+        use-latest-silk-release.yml
+        add-istio.yml
+        enable-sidecar-proxying.yml
+        disable-ingress-sidecar-proxying.yml
+        add-external-istio-lb.yml
+        enable-tls-termination.yml
+        add-datadog-firehose-nozzle.yml
+      SYSTEM_DOMAIN: istio-acceptance.routing.cf-app.com
+    input_mapping:
+      bbl-state: deployments-routing
+      vars-store: deployments-routing
+      vars-files: deployments-routing
+      ops-files: merged-operations
+      release: istio-release
+
+- name: run-iats-acceptance
+  serial_groups:
+  - istio-acceptance
+  plan:
+  - in_parallel:
+    - get: istio-release-ci
+    - get: istio-release
+      trigger: true
+      passed: [istio-acceptance-deploy-cf]
+    - get: deployments-routing
+      passed: [istio-acceptance-deploy-cf]
+    - get: istio-acceptance-tests
+  - task: run-iats
+    file: istio-release-ci/ci/tasks/run-iats/task.yml
+    params:
+      VARS_LOCATION: deployments-routing/istio-acceptance/bbl-state
+      CF_LOGIN_DOMAIN: istio-acceptance.routing.cf-app.com
+      API_DOMAIN: istio.istio-acceptance.routing.cf-app.com
+  - try:
+      put: tracker-routing
+      params:
+        repos:
+        - istio-release
+
+- name: build-istio-release-notes
+  plan:
+  - in_parallel:
+    - get: istio-release-ci
+    - get: istio-release
+      trigger: true
+      passed: [run-iats-acceptance]
+    - get: deployments-routing
+    - get: istio-acceptance-tests
+  - task: build-release-notes
+    file: deployments-routing/ci/tasks/build-istio-release-notes/task.yml
+
+- name: bump-patch-and-create-final-release
+  serial_groups: [create-istio-final-release]
+  plan:
+  - in_parallel:
+    - get: final-version
+      params: {bump: patch}
+    - get: istio-release-ci
+    - get: istio-release-master
+    - get: istio-release
+      passed: [run-iats-acceptance]
+  - put: final-version
+    params:
+      file: final-version/version
+  - task: create-final-release
+    file: istio-release-ci/ci/tasks/create-final-istio-release/task.yml
+    input_mapping:
+      release-repo: istio-release
+    params:
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_istio_blobstore_service_account_key))
+  - put: istio-release-master
+    params:
+      rebase: true
+      repository: final-release-repo
+      tag: final-release-repo/version_number
+      tag_prefix: v
+
+- name: bump-minor-and-create-final-release
+  serial_groups: [create-istio-final-release]
+  plan:
+  - in_parallel:
+    - get: final-version
+      params: {bump: minor}
+    - get: istio-release-ci
+    - get: istio-release-master
+    - get: istio-release
+      passed: [run-iats-acceptance]
+  - put: final-version
+    params:
+      file: final-version/version
+  - task: create-final-release
+    file: istio-release-ci/ci/tasks/create-final-istio-release/task.yml
+    input_mapping:
+      release-repo: istio-release
+    params:
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_istio_blobstore_service_account_key))
+  - put: istio-release-master
+    params:
+      rebase: true
+      repository: final-release-repo
+      tag: final-release-repo/version_number
+      tag_prefix: v
+
+- name: bump-major-and-create-final-release
+  serial_groups: [create-istio-final-release]
+  plan:
+  - in_parallel:
+    - get: final-version
+      params: {bump: major}
+    - get: istio-release-ci
+    - get: istio-release-master
+    - get: istio-release
+      passed: [run-iats-acceptance]
+  - put: final-version
+    params:
+      file: final-version/version
+  - task: create-final-release
+    file: istio-release-ci/ci/tasks/create-final-istio-release/task.yml
+    input_mapping:
+      release-repo: istio-release
+    params:
+      GCP_BLOBSTORE_SERVICE_ACCOUNT_KEY: ((gcp_istio_blobstore_service_account_key))
+  - put: istio-release-master
+    params:
+      rebase: true
+      repository: final-release-repo
+      tag: final-release-repo/version_number
+      tag_prefix: v
+
+- name: merge-master-into-develop
+  serial: true
+  serial_groups:
+    - create-istio-final-release
+  plan:
+  - in_parallel:
+    - get: deployments-routing
+    - get: istio-release-ci
+    - get: cf-routing-release-develop
+      resource: istio-release
+      params:
+        submodules: none
+    - get: cf-routing-release-master
+      resource: istio-release-master
+      trigger: true
+      params:
+        submodules: none
+  - task: merge-master-into-develop
+    file: istio-release-ci/ci/tasks/merge-routing-release-master-into-develop/task.yml
+  - put: istio-release
+    params:
+      repository: cf-routing-release-mergedmaster
