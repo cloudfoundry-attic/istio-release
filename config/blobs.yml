@@ -2,7 +2,7 @@ envoy-linux/envoy-v1.9.0.tgz:
   size: 5831564
   object_id: aecde7ca-0baa-4432-6b51-e773eeb15ada
   sha: 4dbf1474387141e0e4c25fae8f8d13264e0a95ac
-grpcurl-linux/grpcurl-1c6532c060df3c818bee053019e4aa13c8d701e6:
-  size: 14765691
-  object_id: 0f54f952-b180-4b50-5892-1961726044c5
-  sha: 7665c583b19819047d7558186c2e6003d4792ca3
+grpcurl-linux/grpcurl-5631bba11793e645e00d92882c543904426b098a:
+  size: 16115603
+  object_id: ea820d82-9cbb-4831-6a17-a73ee14485bb
+  sha: 7b1f6622bcb513b58c6b8d8a575b845a7ec9a716
