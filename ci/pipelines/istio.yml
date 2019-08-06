@@ -155,11 +155,11 @@ resources:
     tag_filter: v*
     uri: https://github.com/bosh-packages/golang-release.git
 
-- name: envoy-semver-v1.9.0
+- name: envoy-semver-v1.11.0
   type: git
   source:
     branch: master
-    tag_filter: v1.9.0
+    tag_filter: v1.11.0
     uri: https://github.com/envoyproxy/envoy
 
 - name: grpcurl-source
@@ -204,7 +204,6 @@ jobs:
   - in_parallel:
     - get: istio-release
     - get: golang-release-latest
-      trigger: true
     - get: istio-release-ci
     - get: deployments-routing
   - task: upgrade-go1.x-in-istio-release
@@ -233,8 +232,7 @@ jobs:
     - get: istio-release-ci
     - get: istio-release
     - get: envoy-source
-      resource: envoy-semver-v1.9.0
-      trigger: true
+      resource: envoy-semver-v1.11.0
   - task: pull-envoy-image
     privileged: true  # see: https://github.com/concourse/docker-image-resource/issues/164
     file: istio-release-ci/ci/tasks/envoy-blob/pull-from-docker/task.yml
