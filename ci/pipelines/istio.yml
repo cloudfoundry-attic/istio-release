@@ -693,11 +693,12 @@ jobs:
 - name: istio-release-test
   plan:
   - in_parallel:
+    - get: istio-release-ci
     - get: istio-release
       trigger: true
   - task: test
     privileged: true
-    file: istio-release/ci/tasks/istio-release-tests/task.yml
+    file: istio-release-ci/ci/tasks/istio-release-tests/task.yml
 
 - name: istio-dev-deploy-cf
   serial_groups:
