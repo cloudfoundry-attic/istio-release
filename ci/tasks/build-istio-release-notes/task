@@ -1,0 +1,65 @@
+#!/bin/bash
+
+set -e -u
+set -o pipefail
+
+tmp_dir=/tmp/notes
+mkdir -p $tmp_dir
+
+pushd istio-release > /dev/null
+
+  old_istio_release_version=$(git tag --sort=version:refname | egrep "^v\d+\.\d+\.\d+$" | tail -1)
+  new_istio_release_version=$(git rev-parse HEAD)
+
+  diff_string="$old_istio_release_version...$new_istio_release_version"
+  echo "comparing $diff_string:"
+  git log $diff_string | { egrep -o '\[\#(\d+)' || true; } | cut -d# -f2 | sort | uniq > $tmp_dir/stories.raw
+popd > /dev/null
+
+####
+
+pushd istio-release > /dev/null
+  copilot_diff="$(git diff ${old_istio_release_version}..HEAD src/code.cloudfoundry.org/copilot/)"
+  if [[ -n "${copilot_diff}" ]]; then
+    old_copilot_version="$(git diff ${old_istio_release_version}..HEAD src/code.cloudfoundry.org/copilot/ | grep "\-Subproject commit" | awk '{print $3}')"
+    new_copilot_version="$(git diff ${old_istio_release_version}..HEAD src/code.cloudfoundry.org/copilot/ | grep "+Subproject commit" | awk '{print $3}')"
+
+    echo old_copilot_version
+    echo new_copilot_version
+
+    pushd src/code.cloudfoundry.org/copilot > /dev/null
+      diff_string="$old_copilot_version...$new_copilot_version"
+      echo "comparing $diff_string:"
+      git log $diff_string | { egrep -o '\[\#(\d+)' || true; } | cut -d# -f2 | sort | uniq >> $tmp_dir/stories.raw
+    popd > /dev/null
+  fi
+popd > /dev/null
+
+cat $tmp_dir/stories.raw | sort | uniq > $tmp_dir/uniq_stories.raw
+echo "found: "
+cat $tmp_dir/uniq_stories.raw
+
+while read -r story_id
+do
+  curl -s https://www.pivotaltracker.com/services/v5/stories/$story_id
+done < $tmp_dir/uniq_stories.raw > $tmp_dir/stories.json
+
+cat $tmp_dir/stories.json | jq -r '"- "+.current_state+": ["+.name+"]("+.url+")"' > release-notes/istio-notes.md
+
+######
+echo "built: "
+cat release-notes/istio-notes.md
+
+
+######
+echo "manifest changes: "
+pushd istio-release > /dev/null
+copilot_spec_diff=$(git diff ${old_istio_release_version} ${new_istio_release_version} -- jobs/copilot/spec)
+pilot_spec_diff=$(git diff ${old_istio_release_version} ${new_istio_release_version} -- jobs/pilot-discovery/spec)
+envoy_spec_diff=$(git diff ${old_istio_release_version} ${new_istio_release_version} -- jobs/envoy/spec)
+if [ -z "$envoy_spec_diff" ] && [ -z "$pilot_spec_diff" ] && [ -z "$copilot_spec_diff" ]
+then
+  echo empty
+else
+  echo not empty
+fi
